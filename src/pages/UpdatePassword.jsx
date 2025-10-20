@@ -103,14 +103,7 @@ const UpdatePassword = () => {
                 </button>
             </form>
             {/* Back button */}
-            <button className="text-richblack-5 flex flex-row gap-2 place-self-start justify-center items-center cursor-pointer"
-            onClick={() => {
-                navigate("/login");
-            }}
-            >
-                <FaArrowCircleLeft/>
-                <span>Back to login</span>
-            </button>
+            <BackButton to="/login" label="Back to Login"/>
         </div>
     );
 };

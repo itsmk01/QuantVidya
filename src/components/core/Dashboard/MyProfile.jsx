@@ -1,8 +1,13 @@
 import React from 'react'
 
+
 const MyProfile = () => {
+  
   return (
-    <div>MyProfile</div>
+    
+    <div className='text-white'>
+        My profile
+    </div>
   )
 }
 

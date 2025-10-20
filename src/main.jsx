@@ -4,21 +4,19 @@ import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { configureStore } from '@reduxjs/toolkit'
-import rootReducer from './reducer/index.js'
-import { Toaster } from 'react-hot-toast';
-
-const store = configureStore({
-  reducer:rootReducer,
-});
+import { Toaster } from 'react-hot-toast'
+import { PersistGate } from 'redux-persist/integration/react'
+import { store, persistor } from './config/store.js' // import from store.js
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <App />
-        <Toaster/>
-      </BrowserRouter>
+      <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+        <BrowserRouter>
+          <App />
+          <Toaster />
+        </BrowserRouter>
+      </PersistGate>
     </Provider>
   </StrictMode>,
 )

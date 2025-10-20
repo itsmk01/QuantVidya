@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { sendOtp, signUp } from "../services/operations/authAPI";
 import { useNavigate } from "react-router-dom";
 import { OTP_PURPOSE } from "../utils/constant";
+import BackButton from "../components/common/BackButton";
 
 function VerifyEmail() {
   const [otp, setOtp] = useState("");
@@ -92,11 +93,7 @@ function VerifyEmail() {
             </button>
           </form>
           <div className="mt-6 flex items-center justify-between">
-            <Link to="/signup">
-              <p className="text-richblack-5 flex items-center gap-x-2">
-                <BiArrowBack /> Back To Signup
-              </p>
-            </Link>
+            <BackButton to="/signup" label="Back to Signup" />
             <button
               className="flex items-center text-blue-100 gap-x-2 cursor-pointer"
               onClick={() => dispatch(sendOtp(signupData.email, OTP_PURPOSE.SIGNUP, navigate))}

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getResetPasswordToken } from '../services/operations/authAPI';
 import { FaArrowCircleLeft } from "react-icons/fa";
+import BackButton from '../components/common/BackButton';
 
 const ForgotPassword = () => {
 
@@ -63,6 +64,8 @@ const ForgotPassword = () => {
                     >
                         {loading? "Sending...": "Reset Password"}
                     </button>
+                    {/* Back button */}
+                    <BackButton to="/login" label="Back to login"/>
                 </form>
             </div>:
             <div className='ml-24'>
@@ -73,14 +76,7 @@ const ForgotPassword = () => {
                    We have sent the reset email to {email}.
                 </p>
                 {/* Back button */}
-                <button className="text-richblack-5 flex flex-row gap-2 place-self-start justify-center items-center cursor-pointer"
-                onClick={() => {
-                    navigate("/login");
-                }}
-                >
-                    <FaArrowCircleLeft/>
-                    <span>Back to login</span>
-                </button>
+                <BackButton to="/login" label="Back to login"/>
             </div>} 
         </div>
     </div>

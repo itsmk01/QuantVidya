@@ -77,6 +77,7 @@ exports.deleteAccount = async(req, res) => {
         //get id
         const userId = req.user.id;
         const user = await User.findById(userId).session(session);
+
         //validation
         if(!user){
             return res.status(404).json({
@@ -84,6 +85,7 @@ exports.deleteAccount = async(req, res) => {
                 message: "User not found !"
             });
         }
+
         //Remove user from all enrolled courses
         await Course.updateMany(
             {studentEnrolled: userId},
@@ -94,11 +96,13 @@ exports.deleteAccount = async(req, res) => {
         //delete Profile
         const additionalDetailsId = user.additionalDetails;
         await Profile.findByIdAndDelete({_id:additionalDetailsId}, {session});
+
         //delete User
         await User.findByIdAndDelete(userId, {session});
 
         await session.commitTransaction();
         await session.endSession();
+        
         //return response
         return res.status(200).json({
             success: true,
@@ -119,7 +123,7 @@ exports.deleteAccount = async(req, res) => {
 
 
 
-//get all user details
+//get user all details
 exports.getUserDetails = async(req, res) => {
     try{
         //get userId 

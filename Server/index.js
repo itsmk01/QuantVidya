@@ -1,10 +1,11 @@
 require("dotenv").config();
-const express = require("express")
-const cookieParser = require("cookie-parser")
-const dbConnect = require("./config/database")
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const dbConnect = require("./config/database");
 const fileUpload = require("express-fileupload");
-const {cloudinaryConnect} = require("./config/cloudinary")
-const cors = require("cors")
+const {cloudinaryConnect} = require("./config/cloudinary");
+const cors = require("cors");
+
 
 const userRoutes = require("./routes/User");
 const profileRoutes = require("./routes/Profile");
@@ -23,6 +24,8 @@ app.use(cookieParser());
 app.use(cors({                   //for entertaing http request from frontend
     origin:"http://localhost:3000",
     credentials: true, //allows cookies
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 app.use(fileUpload({

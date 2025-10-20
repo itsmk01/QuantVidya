@@ -1,8 +1,8 @@
 import {toast} from 'react-hot-toast';
-
+import {persistor} from '../../config/store';
 import {endpoints} from '../apis';
-import { setLoading, setToken } from '../../slices/authSlice';
-import { setUser } from '../../slices/profileSlice';
+import { setLoading, setUser, setToken } from '../../slices/authSlice';
+
 import {apiConnector} from '../apiconnector';
 
 const {
@@ -13,6 +13,8 @@ const {
     LOGOUT_API,
     RESETPASSTOKEN_API,
     RESETPASSWORD_API,
+    GETUSER_API,
+    REFRESHACCESSTOKEN_API,
 } = endpoints;
 
 export function sendOtp(email,purpose, navigate){
@@ -110,7 +112,7 @@ export function logIn(email,password,navigate){
             const response = await apiConnector("POST", LOGIN_API, {
                 email,
                 password,
-            }, { withCredentials: true });
+            });
             
             console.log("LOGIN API RESPONSE............", response);
             console.log(response.data.success);
@@ -119,18 +121,31 @@ export function logIn(email,password,navigate){
                 throw new Error(response.data.message)
             }
 
-            toast.success("Logged In Successfully", {duration:3000});
-
-            // dispatch(setToken(response.data.token));
-
             const userImage = response.data?.user?.image
                 ? response.data.user.image
                 : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.user.firstName} ${response.data.user.lastName}`;
-            dispatch(setUser({ ...response.data.user, image: userImage }));
+            
+            const userData = { ...response.data.user, image: userImage };
+            
+            // Set user in Redux
+            dispatch(setUser(userData));
+
+            // DEBUG: Check after 1 second if it saved
+            // setTimeout(() => {
+            //     const persistData = localStorage.getItem('persist:root');
+            //     console.log("AFTER LOGIN - LocalStorage:", persistData);
+            //     if (persistData) {
+            //         const parsed = JSON.parse(persistData);
+            //         console.log("Auth state:", JSON.parse(parsed.auth));
+            //     }
+            // }, 1000);
+
             
             // localStorage.setItem("token", response.data.token);
             // localStorage.setItem("user", JSON.stringify(response.data.user));
             // dispatch(setUser(JSON.stringify(response.data.user)));
+
+            toast.success("Logged In Successfully", {duration:3000});
             navigate("/dashboard/my-profile");
         }
         catch (error) {
@@ -149,46 +164,66 @@ export function logIn(email,password,navigate){
     }
 }
 
-export function logOut(navigate){
-    return async(dispatch) => {
-        const toastId = toast.loading("Loading...");
-        dispatch(setLoading(true));
-        try{
-            const response = await apiConnector("POST", LOGOUT_API, {}, { withCredentials: true });
-            console.log("LOGOUT API RESPONSE............", response);
-            console.log(response.data.success);
 
-            if (!response.data.success) {
-                throw new Error(response.data.message)
-            }
+// GET USER DETAILS (For page refresh)
+export function getUserDetails() {
+  return async (dispatch) => {
+    dispatch(setLoading(true));
 
-            toast.success("Logged Out Successfully", {duration:3000});
-         
-            // localStorage.removeItem("token");
-            // localStorage.removeItem("user");
-            // dispatch(setUser(JSON.stringify(response.data.user)));
-
-            // Clear Redux state only
-            dispatch(setUser(null));
-
-            navigate("/");
-        }
-        catch (error) {
-            console.log("ERROR during LOGOUT............", error);
-
-            // If backend sends a message, show it
-            if (error.response && error.response.data && error.response.data.message) {
-                toast.error(error.response.data.message, {duration: 3000});
-            } 
-            else {
-                toast.error("Could not login. Please try again.", {duration: 3000});
-            }
-        }
-        dispatch(setLoading(false));
-        toast.dismiss(toastId);
+    try {
+      const response = await apiConnector("GET", GETUSER_API, {});
+      
+      if (response.data.success) {
+        dispatch(setUser(response.data.user));
+      }
+      
+    } catch (error) {
+      console.error("GET USER DETAILS ERROR:", error);
+      // If 401, user is not authenticated - clear state
+      if (error.response?.status === 401) {
+        dispatch(setUser(null));
+        localStorage.removeItem('persist:root');
+      }
+    } finally {
+      dispatch(setLoading(false));
     }
+  };
 }
 
+
+export function logout(navigate) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Logging Out...");
+
+    try {
+      // Call backend logout (clears cookies)
+      await apiConnector("POST", LOGOUT_API);
+      
+      // Clear Redux state
+      dispatch(setUser(null));
+      
+      // Clear persisted storage
+      localStorage.removeItem('persist:root');
+      
+      toast.success("Logged Out Successfully!");
+      
+      // Navigate to login
+      navigate("/login");
+      
+    } catch (error) {
+      console.error("LOGOUT ERROR:", error);
+      
+      // Even if backend fails, clear frontend state
+      dispatch(setUser(null));
+      localStorage.removeItem('persist:root');
+      navigate("/login");
+      
+      toast.error("Logged out locally");
+    } finally {
+      toast.dismiss(toastId);
+    }
+  };
+}
 
 export function getResetPasswordToken(email, setEmailSent, navigate){
     return async(dispatch) => {

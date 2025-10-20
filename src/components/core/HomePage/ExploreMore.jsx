@@ -40,7 +40,7 @@ const ExploreMore = () => {
                 onClick={() => setMyCards(tab)}
                 className={`px-8 py-2 rounded-full transition-all duration-300 cursor-pointer
                           ${currentTab === tab ? "text-white border border-richblack-400 bg-richblack-900 "
-                          : "text-richblack-200 hover:bg-richblack-900"} `}
+                          : "text-richblack-200 hover:bg-richblack-900 "} `}
                 >
                   {tab}
                 </div>

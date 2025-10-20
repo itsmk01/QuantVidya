@@ -45,6 +45,9 @@ const user_schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "CourseProgress"
     }],
+    refreshToken: {
+        type: String,
+    },
     
 }, {timestamps: true});
 

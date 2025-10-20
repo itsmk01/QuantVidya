@@ -2,7 +2,7 @@ import { useState } from "react"
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
 import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
-
+import BackButton from "../../common/BackButton"
 import { logIn } from "../../../services/operations/authAPI"
 
 function LoginForm() {
@@ -90,7 +90,9 @@ function LoginForm() {
       >
         Sign In
       </button>
+      <BackButton to="/" label="Back to Home"/>
     </form>
+     
   )
 }
 

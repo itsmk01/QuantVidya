@@ -5,6 +5,37 @@ const jwt = require("jsonwebtoken");
 const mailSender = require("../utils/mailSender");
 const Profile = require("../models/Profile");
 
+//generateAccessTokenAndRefreshToken
+const generateAccessAndRefereshTokens = async(userId) =>{
+	try{
+		const user = await User.findById(userId);
+
+		const payload = {
+			email: user.email,
+			id: user._id,
+			accountType: user.accountType,
+    	};
+        // Create Access & Refresh tokens
+		const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+			expiresIn: "15m", // short lifespan
+		});
+        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+			expiresIn: "7d", // longer lifespan
+		});
+
+        user.refreshToken = refreshToken;
+        await user.save();
+
+        return {accessToken, refreshToken}
+	} 
+	catch (error) {
+        return res.status(500).json({
+			success: false,
+			message: "Something went wrong during generating access and refresh"
+		})
+    }
+}
+
 
 //Signup
 exports.signup = async (req,res) => {
@@ -86,99 +117,172 @@ exports.signup = async (req,res) => {
 
 
 // Login
-exports.login = async (req,res) => {
-    try
-    {
-        //fetch data
-        const {email,password} = req.body;
-        if(!email || !password)
-        {
-            return res.status(400).json({
-                success:false,
-                message : "Please fill all the details carefully",
-            })
-        }
-
-        // check for registerd user 
-        let user = await User.findOne({email});
-        if(!user)
-        {
-            return res.status(401).json({
-                success : false,
-                message : "User does not exist. Please Sign Up !",
-            });
-        }
-
-        // Verify password & generate a JWT token
-
-        const payload = {
-            email : user.email,
-            id : user._id,
-            accountType : user.accountType,
-        };
-
-
-        if(await bcrypt.compare(password,user.password)){
-            // password match
-            let token = jwt.sign(payload, process.env.JWT_SECRET,{
-                expiresIn : "2h",
-            });
-
-            user = user.toObject();
-            user.token = token;
-            user.password = undefined;
-
-            const options = {
-                expires : new Date(Date.now() +  2 * 60 * 60 * 1000),
-                httpOnly : true,
-                secure: true,
-                sameSite: "None",
-            }
-
-            res.cookie("token",token,options).status(200).json({
-                success : true,
-                user,
-                message:"User logged in successfully"
-            });
-        }
-        else {
-            // password not match
-            return res.status(403).json({
-                success : false,
-                message : "Wrong Password !",
-            })
-        }
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill all the details carefully",
+      });
     }
-    catch(err){
-        console.error(err)
-        return res.status(500).json({
-            success : false,
-            message : "Login false" 
-        })
+    
+    let user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist. Please Sign Up!",
+      });
     }
-}
+
+	
+
+    if (await bcrypt.compare(password, user.password)) {
+      // Create Access & Refresh tokens
+      const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id);
+
+	  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+	  loggedInUser.password = undefined;
+		const options = {
+			httpOnly: true,
+			secure: true,
+			sameSite: "None",
+		}
+
+      return res
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .status(200)
+        .json({
+          success: true,
+          user: loggedInUser,
+		  accessToken,
+		  refreshToken,
+          message: "User logged in successfully",
+        });
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "Wrong Password!",
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Login failed",
+    });
+  }
+};
+
 
 // Logout
 exports.logout = async (req, res) => {
     try {
-        // Clear the cookie named "token"
-        res.clearCookie("token", {
+        const options = {
             httpOnly: true,
-            secure: true,   // keep this true in production (HTTPS)
-            sameSite: "None"
-        });
+            secure: true,
+            sameSite: "None",
+            path: "/"
+        };
 
-        return res.status(200).json({
-            success: true,
-            message: "User logged out successfully"
-        });
+        // Just clear cookies, don't worry about database
+        // (Expired/invalid tokens will be rejected anyway)
+        return res
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .status(200)
+            .json({
+                success: true,
+                message: "Logged out successfully",
+            });
+
     } catch (err) {
-        console.error(err);
+        console.error("Logout error:", err);
         return res.status(500).json({
             success: false,
             message: "Logout failed"
         });
     }
+};
+
+//Refresh Access Token
+exports.refreshAccessToken = async (req, res) => {
+  try {
+    console.log("🔄 Refresh token endpoint called");
+    
+    const incomingRefreshToken = req.cookies.refreshToken;
+
+    console.log("📝 Refresh token:", incomingRefreshToken ? "Present" : "Missing");
+
+    if (!incomingRefreshToken) {
+      console.log("❌ No refresh token in cookies");
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token missing",
+      });
+    }
+
+    // Verify refresh token
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(
+        incomingRefreshToken,
+        process.env.JWT_REFRESH_SECRET
+      );
+    } catch (jwtError) {
+      console.log("❌ Refresh token verification failed:", jwtError.message);
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token expired or invalid",
+      });
+    }
+
+    // Find user
+    const user = await User.findById(decodedToken.id);
+
+    if (!user) {
+      console.log("❌ User not found for id:", decodedToken.id);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid refresh token - user not found"
+      });
+    }
+
+    // Check if refresh token matches
+    if (incomingRefreshToken !== user.refreshToken) {
+      console.log("❌ Refresh token doesn't match database");
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token expired or reused",
+      });
+    }
+
+    // Generate new tokens
+    const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id);
+
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    };
+
+    return res
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .status(200)
+      .json({
+        success: true,
+        message: "Token refreshed successfully",
+      });
+
+  } catch (error) {
+    console.error("❌ Refresh token error:", error);
+    return res.status(401).json({
+      success: false,
+      message: "Invalid refresh token"
+    });
+  }
 };
 
 
