@@ -21,6 +21,8 @@ import {
   AdminRoute,
 } from "./components/core/Auth/ProtectedRoute";
 import { getUserDetails } from "./services/operations/authAPI";
+import About from './pages/About'
+import ContactUs from './pages/ContactUs'
 
 function App() {
 
@@ -37,6 +39,8 @@ function App() {
         <Route path='/verify-email' element={<OpenRoute><VerifyEmail/></OpenRoute>} />
         <Route path='/forgot-password' element={<OpenRoute><ForgotPassword/></OpenRoute>} />
         <Route path="/update-password/:token" element={<OpenRoute><UpdatePassword /></OpenRoute>} />
+        <Route path='/about' element={<About/>} />
+        <Route path='/contact' element={<ContactUs/>} />
         <Route path='/dashboard/cart' element={<ProtectedRoute><Cart/></ProtectedRoute>} />
 
         {/* Protected Routes (Any authenticated user) */}
@@ -48,7 +52,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="my-profile" element={<MyProfile />} />
+          <Route path="/dashboard/my-profile" element={<MyProfile />} />
         </Route>
 
         {/* Error Routes */}
