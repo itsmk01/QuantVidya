@@ -12,3 +12,8 @@ export const endpoints = {
   GETUSER_API: BASE_URL + "/auth/me",
   REFRESHACCESSTOKEN_API: BASE_URL + "/auth/refresh-token",
 }
+
+// CONTACT US ENDPOINTS
+export const userEndpoints = {
+  CONTACT_US_API: BASE_URL + "/user/contact-us/submit",
+}

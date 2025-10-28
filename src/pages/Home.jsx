@@ -21,7 +21,7 @@ const Home = () => {
 
           <div className='w-11/12 max-w-[1260px] mx-auto mt-10 flex flex-col items-center bg-richblack-900 px-4 pb-8'>
             {/* Become an instructor button */}
-            <Link to={"/signup"}>
+            <Link to={"/signup?accountType=instructor"}>
               <div className='flex flex-row items-center gap-2 border-gray-950 border-1 rounded-4xl px-8 py-3 text-md 
                               font-inter bg-richblack-800 hover:bg-richblack-700 hover:cursor-pointer hover:scale-93 
                               shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.08)]

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
 import { useDispatch } from "react-redux"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import BackButton from "../../common/BackButton"
 import { sendOtp } from "../../../services/operations/authAPI"
 import { setSignupData } from "../../../slices/authSlice"
@@ -12,9 +12,15 @@ import Tab from "../../common/Tab"
 function SignupForm() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [searchParams] = useSearchParams();
+  
+  // Get accountType from URL parameter, default to STUDENT if not present
+  const initialAccountType = searchParams.get('accountType') === 'instructor' 
+    ? ACCOUNT_TYPE.INSTRUCTOR 
+    : ACCOUNT_TYPE.STUDENT
 
   // student or instructor
-  const [accountType, setAccountType] = useState(ACCOUNT_TYPE.STUDENT)
+  const [accountType, setAccountType] = useState(initialAccountType);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -22,7 +28,7 @@ function SignupForm() {
     email: "",
     password: "",
     confirmPassword: "",
-  })
+  });
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
