@@ -34,7 +34,7 @@ const NavBar = () => {
 
                 {/* Navigation Link */}
                 <nav>
-                    <ul className='text-richblack-25 text-base font-inter flex items-center flex-row gap-6'>
+                    <ul className='text-richblack-25 text-base font-inter flex items-center flex-row gap-6 font-bold'>
                     {
                         NavbarLinks.map((link, index) => (
                             <li key={index}>
@@ -92,8 +92,8 @@ const NavBar = () => {
                                         <NavLink
                                         to={link?.path}
                                         className={({ isActive }) =>
-                                            `transition-transform duration-300 inline-block ${
-                                            isActive ? "text-yellow-500 text-xl font-semibold" : "hover:scale-105"
+                                            `transition-all duration-300 inline-block ${
+                                            isActive && "text-yellow-500" 
                                             }`
                                         }
                                         >

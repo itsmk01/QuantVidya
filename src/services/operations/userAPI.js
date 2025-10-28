@@ -4,7 +4,6 @@ import { userEndpoints } from "../apis";
 
 const { CONTACT_US_API } = userEndpoints;
 
-// Function to submit contact us form data
 export function submitContactUs(data) {
     return async (dispatch) => {
         const toastId = toast.loading("Sending message...");

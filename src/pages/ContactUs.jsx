@@ -3,6 +3,7 @@ import { HiChatBubbleLeftRight } from "react-icons/hi2";
 import { FaEarthAsia } from "react-icons/fa6";
 import { IoCall } from "react-icons/io5";
 import ContactUsForm from "../components/core/ContactUsPage/ContactUsForm";
+import Footer from "../components/core/HomePage/Footer"
 
 const contactUsData = [
   {
@@ -53,6 +54,7 @@ const ContactUs = () => {
           <ContactUsForm />
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

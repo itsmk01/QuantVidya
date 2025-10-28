@@ -21,7 +21,7 @@ const ContactUsForm = () => {
       const result = await dispatch(submitContactUs(data))
       
       // Only reset if submission was successful
-      if (result?.success || isSubmitSuccessful) {
+      if (result?.success) {
         reset({
           email: "",
           firstname: "",
