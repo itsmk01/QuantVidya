@@ -27,7 +27,7 @@ const InstructorSection = () => {
             </p>
 
             <div className="w-fit">
-              <CTAButton active={true} path={"/signup"}>
+              <CTAButton active={true} path={"/signup?accountType=instructor"}>
                 <div className="flex items-center gap-3">
                   Start Teaching Today
                   <FaArrowCircleRight />
