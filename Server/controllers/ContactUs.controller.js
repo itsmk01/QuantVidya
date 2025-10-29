@@ -1,4 +1,6 @@
 const ContactUs = require("../models/ContactUs");
+const mailSender = require("../utils/mailSender");
+const { contactUsEmail} = require("../mail-template/contactFormRes");
 
 // Handle contact us form submission
 exports.submitContactForm = async (req, res) => {
@@ -42,6 +44,20 @@ exports.submitContactForm = async (req, res) => {
                 },
                 { new: true } // Returns the updated document
             );
+
+            //send email
+            try{
+                const mailResponse = await mailSender(email, 
+                                                    "Reg-Contact Form Submission", 
+                                                    contactUsEmail(email, firstName, lastName, phoneNumber, message));
+            }
+            catch(e){
+                console.log(e);
+                return res.status(500).json({
+                    success: false,
+                    message: "Issue in sending the email !"
+                })
+            }
                         
             return res.status(200).json({
                 success: true,
@@ -64,6 +80,19 @@ exports.submitContactForm = async (req, res) => {
         });
         
         const savedEntry = await newContactUsEntry.save();
+
+        try{
+            const mailResponse = await mailSender(email, 
+                                                "Reg-Contact Form Submission", 
+                                                contactUsEmail(email, firstName, lastName, phoneNumber, message));
+        }
+        catch(e){
+            console.log(e);
+            return res.status(500).json({
+                success: false,
+                message: "Issue in sending the email !"
+            })
+        }
 
         return res.status(200).json({
             success: true,

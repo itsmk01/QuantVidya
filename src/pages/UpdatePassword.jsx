@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { resetPassword } from "../services/operations/authAPI"; // your function
 import { useDispatch, useSelector } from "react-redux";
 import { FaArrowCircleLeft } from "react-icons/fa";
+import BackButton from "../components/common/BackButton";
 
 const UpdatePassword = () => {
 

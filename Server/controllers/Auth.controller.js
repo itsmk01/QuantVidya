@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mailSender = require("../utils/mailSender");
 const Profile = require("../models/Profile");
+const passwordUpdate = require("../mail-template/passwordUpdate");
 
 //generateAccessTokenAndRefreshToken
 const generateAccessAndRefereshTokens = async(userId) =>{
@@ -334,7 +335,8 @@ exports.changePassword = async (req, res) => {
 
         //send email
         try{
-            await mailSender(email, "Reg-Password Change", "Your password is changed successfully !");
+            const mailResponse = await mailSender(email, "Reg-Password Change", passwordUpdate(user.email, user.firstName + " " + user.lastName));
+            console.log("Mail Response for successfully changing password: ", mailResponse);
         }
         catch(e){
             return res.status(401).json({
