@@ -17,3 +17,8 @@ export const endpoints = {
 export const userEndpoints = {
   CONTACT_US_API: BASE_URL + "/user/contact-us/submit",
 }
+
+// COURSE ENDPOINTS
+export const courseEndpoints = {
+  GETALLCATEGORY_API: BASE_URL + "/course/getAllCategories",
+}

@@ -7,11 +7,13 @@ import { ACCOUNT_TYPE } from '../../utils/constant';
 import { AiOutlineShoppingCart, AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import {BsChevronDown} from 'react-icons/bs';
 import ProfileDropdown from '../core/Auth/ProfileDropdown';
+import { apiConnector } from '../../services/apiconnector';
+import { courseEndpoints } from '../../services/apis';
 
 const NavBar = () => {
     const {user} = useSelector((state) => state.auth);
     const {totalItems} = useSelector((state) => state.cart);
-
+    const {GETALLCATEGORY_API} = courseEndpoints;
     const [subLinks, setSubLinks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -20,6 +22,22 @@ const NavBar = () => {
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
+
+    const fetchSubLinks = async () => {
+            setLoading(true);
+            try{
+                const response = await apiConnector("GET", GETALLCATEGORY_API, null);
+                setSubLinks(response.data.allCategory);
+            }catch(error){
+                console.log("Error while fetching categories", error);
+            }
+            setLoading(false);
+            
+        }
+
+    useEffect(() => {
+        fetchSubLinks();
+    }, []);
 
     return (
         <div className='border-b-[1px] border-richblack-700 '>
@@ -55,7 +73,7 @@ const NavBar = () => {
                                         <p>{link.title}</p>
                                         <BsChevronDown />
                                         <div className={`absolute left-[50%] top-[-50%] z-[1000] flex w-[200px] 
-                                                        translate-x-[-50%] translate-y-[3em] flex-col rounded-lg bg-richblack-5 p-4 
+                                                        translate-x-[-50%] translate-y-[3em] flex-col rounded-lg bg-richblack-5 p-2 
                                                         text-richblack-900 transition-all duration-150 lg:w-[300px]
                                                         ${isCatalogOpen ? 'visible opacity-100 translate-y-[1.65em]' : 'invisible opacity-0'}`}>
                                             <div className="absolute left-[50%] top-0 -z-10 h-6 w-6 translate-x-[80%] 
@@ -79,7 +97,7 @@ const NavBar = () => {
                                                             .split(" ")
                                                             .join("-")
                                                             .toLowerCase()}`}
-                                                        className="rounded-lg bg-transparent py-4 pl-4 hover:bg-richblack-50"
+                                                        className="text-black rounded-lg bg-transparent py-4 pl-4 hover:bg-richblack-50"
                                                         key={i}
                                                         >
                                                         <p>{subLink.name}</p>
