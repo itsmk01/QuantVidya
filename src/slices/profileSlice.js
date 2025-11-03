@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setLoading } from "./authSlice";
 
 const initialState = {
   user: null,
@@ -21,6 +20,6 @@ const profileSlice = createSlice({
 
 
 
-export const {setUser} = profileSlice.actions;
+export const {setUser, setLoading} = profileSlice.actions;
 
 export default profileSlice.reducer;

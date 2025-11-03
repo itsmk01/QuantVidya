@@ -56,11 +56,12 @@ const NavBar = () => {
 
                 {/* Navigation Link - Hidden on small screens only */}
                 <nav className='hidden sm:block'>
-                    <ul className='text-richblack-25 text-base font-inter flex items-center flex-row gap-6 font-bold'>
+                    <ul className='text-richblack-25 text-base font-inter flex items-center flex-row md:gap-6 gap-3 font-bold'>
                     {
                         NavbarLinks.map((link, index) => (
                             <li key={index}>
                                 {
+                                    // Catalog with dropdown
                                     link.title === "Catalog" ? 
                                     (
                                     <>
@@ -133,57 +134,57 @@ const NavBar = () => {
                     </ul>
                 </nav>
 
-                {/* Desktop Login/SignUp - Hidden on medium and small screens */}
-                <div className='hidden lg:flex text-white flex-row gap-6 items-center'>
+                {/* Login/signup/cart/profiledropdown */}
+                <div className='flex flex-row md:gap-4 gap-2 items-center'>
+                    {/* Show Login/Signup when not logged in (desktop only) */}
                     {!user && (
-                        <NavLink 
-                        to="/login"
-                        className={({ isActive }) =>
-                            `rounded-[8px] border border-richblack-700 px-[12px] py-[8px] transition-all duration-300 hover:scale-95
-                            ${isActive ? "bg-yellow-400 text-black" : "bg-richblack-800 text-richblack-100"}`
-                        }>
-                            Log in
-                        </NavLink>
+                        <div className='hidden lg:flex flex-row gap-6 items-center'>
+                            <NavLink 
+                                to="/login"
+                                className={({ isActive }) =>
+                                    `rounded-[8px] border border-richblack-700 px-[12px] py-[8px] transition-all duration-300 hover:scale-95
+                                    ${isActive ? "bg-yellow-400 text-black" : "bg-richblack-800 text-richblack-100"}`
+                                }>
+                                Log in
+                            </NavLink>
+                            <NavLink 
+                                to="/signup" 
+                                className={({ isActive }) =>
+                                    `rounded-[8px] border border-richblack-700 px-[12px] py-[8px] transition-all duration-300 hover:scale-95
+                                    ${isActive ? "bg-yellow-400 text-black" : "bg-richblack-800 text-richblack-100"}`
+                                }>
+                                Sign up
+                            </NavLink>
+                        </div>
                     )}
-                    {!user && (
-                        <NavLink 
-                        to="/signup" 
-                        className={({ isActive }) =>
-                            `rounded-[8px] border border-richblack-700 px-[12px] py-[8px] transition-all duration-300 hover:scale-95
-                            ${isActive ? "bg-yellow-400 text-black" : "bg-richblack-800 text-richblack-100"}`
-                        }>
-                            Sign up
-                        </NavLink>
-                    )}
-                </div>
-                
-                {/* Profile Dropdown & Cart */}
-                <div className='flex flex-row gap-4 items-center'>
-                    {/* Dashboard/Cart */}
-                    <div className='flex text-white flex-row gap-6 items-center'>
-                        {user && user?.accountType !== ACCOUNT_TYPE.INSTRUCTOR && (
-                            <NavLink to="/dashboard/cart" className='relative text-2xl'>
-                                <AiOutlineShoppingCart/>
-                                {
-                                    totalItems > 0 && (
+                    
+                    {/* Show Cart & Profile when logged in */}
+                    {user && (
+                        <>
+                            {user.accountType !== ACCOUNT_TYPE.INSTRUCTOR && (
+                                <NavLink to="/dashboard/cart" className='relative text-2xl text-white'>
+                                    <AiOutlineShoppingCart/>
+                                    {totalItems > 0 && (
                                         <span className='absolute -top-2 -right-2 bg-yellow-400 text-black text-xs rounded-full w-5 h-5 flex items-center justify-center'>
                                             {totalItems}
                                         </span>
-                                    )
-                                }
-                            </NavLink>
-                        )}
-                        {user && <ProfileDropdown />}
-                    </div>
+                                    )}
+                                </NavLink>
+                            )}
+                            <ProfileDropdown />
+                        </>
+                    )}
 
-                    {/* Hamburger Menu Button - Show on medium and small screens */}
+                    {/* Hamburger Menu Button */}
                     <button 
-                        className='lg:hidden text-white text-3xl'
+                        className={` text-white text-3xl ${user ? "sm:hidden": "lg:hidden"}`}
                         onClick={toggleMobileMenu}
                     >
                         {isMobileMenuOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
                     </button>
                 </div>
+                
+                
             </div>
 
             {/* Mobile Menu */}
