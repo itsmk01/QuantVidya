@@ -23,6 +23,8 @@ import {
 import { getUserDetails } from "./services/operations/authAPI";
 import About from "./pages/About";
 import ContactUs from "./pages/ContactUs";
+import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
+import Settings from "./components/core/Dashboard/Settings";
 
 function App() {
   const dispatch = useDispatch();
@@ -75,25 +77,20 @@ function App() {
         />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactUs />} />
-        <Route
-          path="/dashboard/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
 
-        {/* Protected Routes (Any authenticated user) */}
         <Route
-          path="/dashboard/my-profile"
           element={
             <ProtectedRoute>
-              <MyProfile />
+              <Dashboard />
             </ProtectedRoute>
           }
-        />
-        
+        >
+          {/* Protected Routes (Any authenticated user) */}
+          <Route path="/dashboard/my-profile" element={<MyProfile />} />
+          <Route path="/dashboard/enrolled-courses" element={<EnrolledCourses />} />
+          <Route path="/dashboard/cart" element={<Cart />} />
+          <Route path="/dashboard/settings" element={<Settings/>} />
+        </Route>
 
         {/* Error Routes */}
         {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}

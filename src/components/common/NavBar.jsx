@@ -39,6 +39,31 @@ const NavBar = () => {
         fetchSubLinks();
     }, []);
 
+    // Prevent background scroll when mobile menu is open
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            // Save current scroll position
+            const scrollY = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
+        } else {
+            // Restore scroll position
+            const scrollY = document.body.style.top;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        }
+
+        // Cleanup function to reset styles when component unmounts
+        return () => {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+        };
+    }, [isMobileMenuOpen]);
+
     return (
         <div className='border-b-[1px] border-richblack-700 '>
 
@@ -189,7 +214,7 @@ const NavBar = () => {
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-                <div className='lg:hidden bg-richblack-800 border-t border-richblack-700'>
+                <div className='lg:hidden fixed z-[1000] overflow-auto w-full h-full backdrop-blur-sm bg-richblack-800/80 border-t border-richblack-700'>
                     <div className='w-11/12 mx-auto py-4'>
                         {/* Navigation Links - Show on small screens only */}
                         <nav className='sm:hidden mb-4'>
