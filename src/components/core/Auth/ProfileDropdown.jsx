@@ -13,6 +13,7 @@ export default function ProfileDropdown() {
   const ref = useRef(null)
 
   useEffect(() => {
+    console.log(user?.additionalDetails?.image)
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
         setOpen(false)
@@ -32,7 +33,7 @@ export default function ProfileDropdown() {
         onClick={() => setOpen(prev => !prev)}
       >
         <img
-          src={user?.image || "/default-avatar.png"}
+          src={user?.additionalDetails?.image || "/default-avatar.png"}
           alt={`profile-${user?.firstName}`}
           className="aspect-square w-[30px] rounded-full object-cover user-select-none"
         />

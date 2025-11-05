@@ -63,5 +63,6 @@ export const apiConnector = (method, url, bodyData, headers, params) => {
     data: bodyData || null,
     headers: headers || null,
     params: params || null,
+    withCredentials: true, // 🔥 This ensures cookies are actually sent
   });
 };

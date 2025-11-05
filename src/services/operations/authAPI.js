@@ -164,33 +164,6 @@ export function logIn(email,password,navigate){
     }
 }
 
-
-// GET USER DETAILS (For page refresh)
-export function getUserDetails() {
-  return async (dispatch) => {
-    dispatch(setLoading(true));
-
-    try {
-      const response = await apiConnector("GET", GETUSER_API, {});
-      
-      if (response.data.success) {
-        dispatch(setUser(response.data.user));
-      }
-      
-    } catch (error) {
-      console.error("GET USER DETAILS ERROR:", error);
-      // If 401, user is not authenticated - clear state
-      if (error.response?.status === 401) {
-        dispatch(setUser(null));
-        localStorage.removeItem('persist:root');
-      }
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-}
-
-
 export function logout(navigate) {
   return async (dispatch) => {
     const toastId = toast.loading("Logging Out...");

@@ -1,11 +1,25 @@
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { FaEdit, FaUser, FaEnvelope, FaPhone, FaVenusMars, FaBirthdayCake, FaCamera, FaChevronRight } from "react-icons/fa";
+import { getUserDetails } from '../../../services/operations/userAPI';
 
 const MyProfile = () => {
-	const {user, loading: authLoading} = useSelector((state) => state.auth);
-	const {loading: profileLoading} = useSelector((state) => state.profile);
+
+	const {loading: authLoading} = useSelector((state) => state.auth);
+	const {user, loading: profileLoading} = useSelector((state) => state.profile);
 	const [imageHover, setImageHover] = useState(false);
+	const dispatch = useDispatch();
+
+
+	useEffect(() => {
+	if (!user) {
+		dispatch(getUserDetails());
+	} else {
+		console.log("User already available:", user?.email);
+	}
+	}, [dispatch, user]);
+
+
 
 	if (profileLoading || authLoading) {
 		return (
@@ -17,6 +31,8 @@ const MyProfile = () => {
 			</div>
 		)
 	}
+
+	
 
 	const profileDetails = [
 		{
@@ -54,9 +70,9 @@ const MyProfile = () => {
 		{
 			icon: <FaBirthdayCake className="text-yellow-50" />,
 			label: "Date of Birth",
-			value: user?.additionalDetails?.dob,
+			value: user?.additionalDetails?.dateOfBirth,
 			placeholder: "Add Date of Birth",
-			isEmpty: !user?.additionalDetails?.dob
+			isEmpty: !user?.additionalDetails?.dateOfBirth
 		}
 	];
 
@@ -83,7 +99,7 @@ const MyProfile = () => {
 								onMouseLeave={() => setImageHover(false)}
 							>
 								<img 
-									src={user?.image} 
+									src={user?.additionalDetails?.image} 
 									alt="Profile" 
 									className='md:h-28 md:w-28 w-20 h-20 rounded-full object-cover border-4 border-richblack-700 transition-all duration-300 group-hover:border-yellow-50' 
 								/>
@@ -173,7 +189,7 @@ const MyProfile = () => {
 							{profileDetails.map((detail, index) => (
 								<div 
 									key={index}
-									className='p-4 bg-richblack-700 rounded-lg hover:bg-richblack-600 transition-all duration-200 cursor-pointer group'
+									className='p-4 overflow-auto bg-richblack-700 rounded-lg hover:bg-richblack-600 transition-all duration-200 cursor-pointer group'
 								>
 									<div className='flex items-start gap-3'>
 										<div className='p-2 bg-richblack-800 rounded-lg group-hover:bg-richblack-900 transition-colors'>

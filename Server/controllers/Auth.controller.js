@@ -142,12 +142,12 @@ exports.login = async (req, res) => {
       // Create Access & Refresh tokens
       const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id);
 
-	  const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+	  const loggedInUser = await User.findById(user._id).select("-password -refreshToken").populate("additionalDetails").exec();
 	  loggedInUser.password = undefined;
 		const options = {
 			httpOnly: true,
 			secure: true,
-			sameSite: "None",
+			sameSite: "none",
 		}
 
       return res

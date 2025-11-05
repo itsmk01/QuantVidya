@@ -20,7 +20,6 @@ import {
   InstructorRoute,
   AdminRoute,
 } from "./components/core/Auth/ProtectedRoute";
-import { getUserDetails } from "./services/operations/authAPI";
 import About from "./pages/About";
 import ContactUs from "./pages/ContactUs";
 import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";

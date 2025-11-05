@@ -9,13 +9,13 @@ export const endpoints = {
   LOGOUT_API: BASE_URL + "/auth/logout",
   RESETPASSTOKEN_API: BASE_URL + "/auth/reset-password-token",
   RESETPASSWORD_API: BASE_URL + "/auth/reset-password",
-  GETUSER_API: BASE_URL + "/auth/me",
   REFRESHACCESSTOKEN_API: BASE_URL + "/auth/refresh-token",
 }
 
 // CONTACT US ENDPOINTS
 export const userEndpoints = {
   CONTACT_US_API: BASE_URL + "/user/contact-us/submit",
+  GETUSER_API: BASE_URL + "/auth/me",
 }
 
 // COURSE ENDPOINTS

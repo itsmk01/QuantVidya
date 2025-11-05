@@ -1,8 +1,9 @@
 import { toast } from 'react-hot-toast';
 import { apiConnector } from "../apiconnector";
 import { userEndpoints } from "../apis";
+import { setUser, setLoading } from '../../slices/profileSlice';
 
-const { CONTACT_US_API } = userEndpoints;
+const { CONTACT_US_API, GETUSER_API } = userEndpoints;
 
 export function submitContactUs(data) {
     return async (dispatch) => {
@@ -45,4 +46,34 @@ export function submitContactUs(data) {
             toast.dismiss(toastId);
         }
     };
+}
+
+// GET USER DETAILS (For page refresh)
+export function getUserDetails() {
+  return async (dispatch) => {
+    dispatch(setLoading(true));
+
+    try {
+    const response = await apiConnector(
+        "GET",
+        GETUSER_API,
+        null
+    );
+
+      
+      if (response.data.success) {
+        dispatch(setUser(response.data.userdetails));
+      }
+      
+    } catch (error) {
+      console.error("GET USER DETAILS ERROR:", error);
+      // If 401, user is not authenticated - clear state
+      if (error.response?.status === 401) {
+        dispatch(setUser(null));
+        localStorage.removeItem('persist:root');
+      }
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 }
