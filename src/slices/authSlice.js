@@ -24,13 +24,13 @@ const authSlice = createSlice({
             state.token = action.payload;
         },
         setUser(state, action) {
-            // console.log("🔵 setUser called with:", action.payload);
-            // console.trace("🔍 setUser called from:"); // This shows WHERE it was called from
+            // console.log(" setUser called with:", action.payload);
+            // console.trace(" setUser called from:"); // This shows WHERE it was called from
             state.user = action.payload;
         },
         logout(state) {
-            console.log("🔴 LOGOUT called!");
-            console.trace("🔍 Logout called from:");
+            console.log(" LOGOUT called!");
+            console.trace(" Logout called from:");
             state.user = null;
             state.token = null;
             state.signupData = null;

@@ -1,14 +1,20 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { persistStore } from 'redux-persist';
-import rootReducer from '../reducer/index'; // this is now your persistedReducer
+import { configureStore } from "@reduxjs/toolkit";
+import { persistStore } from "redux-persist";
+import rootReducer from "../reducer";
 
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore these action types from redux-persist
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', 'persist/PURGE'],
+        ignoredActions: [
+          "persist/PERSIST",
+          "persist/REHYDRATE",
+          "persist/FLUSH",      // Ignore FLUSH warning
+          "persist/PAUSE",
+          "persist/PURGE",
+          "persist/REGISTER",
+        ],
       },
     }),
 });

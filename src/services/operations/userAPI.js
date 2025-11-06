@@ -1,9 +1,9 @@
 import { toast } from 'react-hot-toast';
 import { apiConnector } from "../apiconnector";
 import { userEndpoints } from "../apis";
-import { setUser, setLoading } from '../../slices/profileSlice';
+import { setUser, setLoading } from '../../slices/authSlice';
 
-const { CONTACT_US_API, GETUSER_API } = userEndpoints;
+const { CONTACT_US_API, GETUSER_API  } = userEndpoints;
 
 export function submitContactUs(data) {
     return async (dispatch) => {

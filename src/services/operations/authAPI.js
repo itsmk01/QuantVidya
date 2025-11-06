@@ -130,21 +130,6 @@ export function logIn(email,password,navigate){
             // Set user in Redux
             dispatch(setUser(userData));
 
-            // DEBUG: Check after 1 second if it saved
-            // setTimeout(() => {
-            //     const persistData = localStorage.getItem('persist:root');
-            //     console.log("AFTER LOGIN - LocalStorage:", persistData);
-            //     if (persistData) {
-            //         const parsed = JSON.parse(persistData);
-            //         console.log("Auth state:", JSON.parse(parsed.auth));
-            //     }
-            // }, 1000);
-
-            
-            // localStorage.setItem("token", response.data.token);
-            // localStorage.setItem("user", JSON.stringify(response.data.user));
-            // dispatch(setUser(JSON.stringify(response.data.user)));
-
             toast.success("Logged In Successfully", {duration:3000});
             navigate("/dashboard/my-profile");
         }

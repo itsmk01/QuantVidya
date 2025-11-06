@@ -7,64 +7,96 @@ const { uploadImageToCloudinary } = require("../utils/imageUploader");
 //create profile
 
 exports.updateProfile = async(req, res) => {
-    try{
-        //fetch data
-        const {gender, dateOfBirth, about, contactNumber} = req.body;
-        const profilePic = req.files.profilePic;
-        const userId = req.user.id;
+    const session = await mongoose.startSession()
+    session.startTransaction()
 
-        //validation
+    try {
+        // Safely destructure with default empty object
+        const {firstName, lastName, gender, dateOfBirth, about, contactNumber} = req.body || {}
+        const profilePic = req.files?.profilePic
+        const userId = req.user.id
+
         if(!userId){
+            await session.abortTransaction()
+            session.endSession()
             return res.status(400).json({
                 success: false,
-                message: "UserId is required !"
-            });
+                message: "UserId is required!"
+            })
         }
 
-        //find userdetails
-        const user = await User.findById(userId);
+        const user = await User.findById(userId)
         if(!user){
+            await session.abortTransaction()
+            session.endSession()
             return res.status(400).json({
                 success: false,
-                message: "User is not found !"
-            });
+                message: "User not found!"
+            })
         }
-        const additionalDetailsId = user.additionalDetails;
 
-        // build update object dynamically
-        const updateData = {};
-        if (gender) updateData.gender = gender;
-        if (dateOfBirth) updateData.dateOfBirth = dateOfBirth;
-        if (contactNumber) updateData.contactNumber = contactNumber;
-        if (about) updateData.about = about;
+        const additionalDetailsId = user.additionalDetails
+
+        // Build update object dynamically
+        const updateData = {}
+        if (gender !== undefined) updateData.gender = gender
+        if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth
+        if (contactNumber !== undefined) updateData.contactNumber = contactNumber
+        if (about !== undefined) updateData.about = about
         
-        //if profilePic then upload
-        let uploadDetails;
+        // Upload profile picture if provided
         if(profilePic){
-            uploadDetails = await uploadImageToCloudinary(profilePic, process.env.FOLDER_NAME);
-            updateData.image = uploadDetails.secure_url;
+            const uploadDetails = await uploadImageToCloudinary(
+                profilePic, 
+                process.env.FOLDER_NAME
+            )
+            updateData.image = uploadDetails.secure_url
         }
 
-        //update profile
-        const updatedAdditionalDetails = await Profile.findByIdAndUpdate(
-            additionalDetailsId,
-            {$set: updateData},
-            {new: true}
-        );
+        // Only update additional details if there's something to update
+        if(Object.keys(updateData).length > 0) {
+            await Profile.findByIdAndUpdate(
+                additionalDetailsId,
+                {$set: updateData},
+                {new: true, session}
+            )
+        }
 
-        //return response
+        // Update user basic info
+        if(firstName !== undefined) user.firstName = firstName
+        if(lastName !== undefined) user.lastName = lastName
+        
+        // Only save if user data was modified
+        if(firstName !== undefined || lastName !== undefined) {
+            await user.save({session})
+        }
+
+        await session.commitTransaction()
+        session.endSession()
+
+        // IMPORTANT: Fetch fresh data AFTER transaction
+        const updatedUser = await User.findById(userId)
+            .populate("additionalDetails")
+            .select("-password")  // Don't send password
+            .lean()  // Convert to plain object
+            .exec()
+
         return res.status(200).json({
             success: true,
-            message: "Profile updated successfully !",
-        });
+            user: updatedUser,
+            message: "Profile updated successfully!",
+        })
 
-    }
-    catch(err){
-        console.log(err);
-        return res.status(400).json({
+    } catch(err) {
+        await session.abortTransaction()
+        session.endSession()
+
+        console.error("Profile Update Error:", err)
+        return res.status(500).json({
             success: false,
-            message: "Error in creating Profile !"
-        });
+            message: "Error updating profile!",
+            error: err.message
+        })
     }
 }
 

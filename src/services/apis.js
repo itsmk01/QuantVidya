@@ -16,6 +16,12 @@ export const endpoints = {
 export const userEndpoints = {
   CONTACT_US_API: BASE_URL + "/user/contact-us/submit",
   GETUSER_API: BASE_URL + "/auth/me",
+ 
+}
+
+//SETTING ENDPOINTS
+export const settingsEndpoints = {
+  UPDATE_PROFILE_API: BASE_URL + "/profile/updateProfile"
 }
 
 // COURSE ENDPOINTS
