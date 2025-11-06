@@ -12,8 +12,8 @@ const SideBar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { user,loading: profileLoading } = useSelector((state) => state.profile);
-  const { loading: authLoading } = useSelector((state) => state.auth);
+  const { loading: profileLoading } = useSelector((state) => state.profile);
+  const { user, loading: authLoading } = useSelector((state) => state.auth);
   const [confirmationModal, setConfirmationModal] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
 

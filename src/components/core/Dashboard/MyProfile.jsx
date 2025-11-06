@@ -5,21 +5,10 @@ import { getUserDetails } from '../../../services/operations/userAPI';
 
 const MyProfile = () => {
 
-	const {loading: authLoading} = useSelector((state) => state.auth);
-	const {user, loading: profileLoading} = useSelector((state) => state.profile);
+	const {user, loading: authLoading} = useSelector((state) => state.auth);
+	const {loading: profileLoading} = useSelector((state) => state.profile);
 	const [imageHover, setImageHover] = useState(false);
-	const dispatch = useDispatch();
-
-
-	useEffect(() => {
-	if (!user) {
-		dispatch(getUserDetails());
-	} else {
-		console.log("User already available:", user?.email);
-	}
-	}, [dispatch, user]);
-
-
+	
 
 	if (profileLoading || authLoading) {
 		return (
