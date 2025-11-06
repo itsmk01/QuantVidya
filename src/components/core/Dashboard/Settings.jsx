@@ -342,7 +342,7 @@ const Settings = () => {
 
                 {/* Email (Read Only) */}
                 <div>
-                  <label className='text-sm text-richblack-200 mb-2 block flex items-center gap-2'>
+                  <label className='text-sm text-richblack-200 mb-2 flex items-center gap-2'>
                     <MdEmail />
                     Email
                   </label>
@@ -356,7 +356,7 @@ const Settings = () => {
 
                 {/* Phone Number */}
                 <div>
-                  <label className='text-sm text-richblack-200 mb-2 block flex items-center gap-2'>
+                  <label className='text-sm text-richblack-200 mb-2 flex items-center gap-2'>
                     <MdPhone />
                     Phone Number
                   </label>
