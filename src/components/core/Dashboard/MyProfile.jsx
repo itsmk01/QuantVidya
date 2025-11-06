@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FaEdit, FaUser, FaEnvelope, FaPhone, FaVenusMars, FaBirthdayCake, FaCamera, FaChevronRight } from "react-icons/fa";
 import { getUserDetails } from '../../../services/operations/userAPI';
+import { useNavigate } from 'react-router-dom';
 
 const MyProfile = () => {
 
+	const navigate = useNavigate();
 	const {user, loading: authLoading} = useSelector((state) => state.auth);
 	const {loading: profileLoading} = useSelector((state) => state.profile);
 	const [imageHover, setImageHover] = useState(false);
@@ -20,8 +22,6 @@ const MyProfile = () => {
 			</div>
 		)
 	}
-
-	
 
 	const profileDetails = [
 		{
@@ -64,10 +64,6 @@ const MyProfile = () => {
 			isEmpty: !user?.additionalDetails?.dateOfBirth
 		}
 	];
-
-	const handleNavigate = (path) => {
-		window.location.href = path;
-	};
 
 	return (
 		<div className='min-h-[calc(100vh-3.5rem)] bg-richblack-900 pb-12'>
@@ -121,7 +117,7 @@ const MyProfile = () => {
 
 							{/* Edit Button */}
 							<button
-								onClick={() => handleNavigate("/dashboard/settings")}
+								onClick={() => navigate("/dashboard/settings")}
 								className='bg-yellow-50 text-richblack-900 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-yellow-100 transition-all duration-200 hover:scale-105 shadow-lg'
 							>
 								<FaEdit />
@@ -151,7 +147,7 @@ const MyProfile = () => {
 								</p>
 							</div>
 							<button
-								onClick={() => handleNavigate("/dashboard/settings")}
+								onClick={() => navigate("/dashboard/settings")}
 								className='text-yellow-50 hover:text-yellow-100 transition-colors p-2 hover:bg-richblack-700 rounded-lg'
 							>
 								<FaEdit className="text-xl" />
@@ -166,7 +162,7 @@ const MyProfile = () => {
 						<div className='flex justify-between items-start mb-6'>
 							<h2 className='text-xl font-semibold text-richblack-5'>Personal Details</h2>
 							<button
-								onClick={() => handleNavigate("/dashboard/settings")}
+								onClick={() => navigate("/dashboard/settings")}
 								className='bg-richblack-700 text-yellow-50 px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-richblack-600 transition-all duration-200'
 							>
 								<FaEdit />

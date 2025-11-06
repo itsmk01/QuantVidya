@@ -13,7 +13,6 @@ export default function ProfileDropdown() {
   const ref = useRef(null)
 
   useEffect(() => {
-    console.log(user?.additionalDetails?.image)
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
         setOpen(false)
