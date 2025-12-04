@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { updateProfile } from '../../../services/operations/settingsAPI'
+import { changePassword, updateProfile } from '../../../services/operations/settingsAPI'
 import { FaEdit, FaCamera, FaTrash, FaSave, FaLock, FaBell, FaShieldAlt } from "react-icons/fa"
 import { MdEmail, MdPhone } from "react-icons/md"
+import { deleteAccount } from '../../../services/operations/settingsAPI'
+import ConfirmationModal from '../../common/ConfirmationModal'
 
 const Settings = () => {
   const dispatch = useDispatch()
@@ -12,6 +14,7 @@ const Settings = () => {
   const { user, loading: authLoading } = useSelector((state) => state.auth)
   const { loading: profileLoading } = useSelector((state) => state.profile)
   
+  const [confirmationModal, setConfirmationModal] = useState(null)
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [isEditingImage, setIsEditingImage] = useState(false)
   const [isEditingPassword, setIsEditingPassword] = useState(false)
@@ -143,18 +146,49 @@ const Settings = () => {
     }
   }
 
-  const handlePasswordSubmit = (e) => {
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault()
-    // Add your update password logic here
-    console.log('Password updated')
-    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
-    setIsEditingPassword(false)
+    // update password service operation
+    const passwordUpdated = await dispatch(changePassword(passwordData));
+    console.log('Password updated');
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    if (passwordUpdated.success) {
+      setIsEditingPassword(false)
+    }
   }
 
   const handleDeleteAccount = () => {
-    // Add confirmation modal and delete account logic
-    console.log('Delete account')
-  }
+    let passwordInput = ""; // Store password in closure
+    
+    setConfirmationModal({
+      text1: "Are you sure?",
+      text2: (
+        <div className="flex flex-col gap-3">
+          <p>Your account will be deleted permanently.</p>
+          <input
+            type="password"
+            placeholder="Enter your password to confirm"
+            onChange={(e) => { passwordInput = e.target.value; }} // Store in closure variable
+            className="w-full rounded-md bg-richblack-700 p-3 text-richblack-5 placeholder:text-richblack-400"
+          />
+        </div>
+      ),
+      btn1text: "Delete Account",
+      btn1Icon: <FaTrash />,
+      btn2text: "Cancel",
+      btn1handler: () => {
+        if(!passwordInput || passwordInput.trim() === ""){
+          toast.error("Please enter your password");
+          return;
+        }
+        dispatch(deleteAccount(navigate, passwordInput));
+        setConfirmationModal(null);
+      },
+      btn2handler: () => {
+        setConfirmationModal(null);
+      }
+    });
+  };
 
   const handleCancelImageEdit = () => {
     setIsEditingImage(false)
@@ -262,7 +296,7 @@ const Settings = () => {
                           setProfilePic(null)
                           setPreviewImage(user?.additionalDetails?.image || '')
                         }}
-                        className='bg-richblack-700 text-richblack-200 px-4 py-2 rounded-lg font-semibold hover:bg-richblack-600 transition-all duration-200'
+                        className='bg-richblack-700 text-richblack-200 px-4 py-2 rounded-lg font-semibold hover:bg-richblack-600 transition-all duration-200 cursor-pointer'
                       >
                         Remove
                       </button>
@@ -488,7 +522,7 @@ const Settings = () => {
                 <div className='flex gap-3 mt-6'>
                   <button
                     type="submit"
-                    className='bg-green-600 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-green-700 transition-all duration-200'
+                    className='bg-green-600 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-green-700 transition-all duration-200 cursor-pointer'
                   >
                     <FaSave />
                     Update Password
@@ -499,7 +533,7 @@ const Settings = () => {
                       setIsEditingPassword(false)
                       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
                     }}
-                    className='bg-richblack-700 text-richblack-200 px-6 py-2 rounded-lg font-semibold hover:bg-richblack-600 transition-all duration-200'
+                    className='bg-richblack-700 text-richblack-200 px-6 py-2 rounded-lg font-semibold hover:bg-richblack-600 transition-all duration-200 cursor-pointer'
                   >
                     Cancel
                   </button>
@@ -537,7 +571,7 @@ const Settings = () => {
                   </div>
                   <button
                     onClick={() => handleNotificationToggle(key)}
-                    className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
+                    className={`relative w-14 h-7 rounded-full transition-all duration-300 cursor-pointer ${
                       value ? 'bg-green-500' : 'bg-richblack-600'
                     }`}
                   >
@@ -569,7 +603,7 @@ const Settings = () => {
             
             <button
               onClick={handleDeleteAccount}
-              className='bg-red-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-red-700 transition-all duration-200'
+              className='bg-red-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-red-700 transition-all duration-200 cursor-pointer'
             >
               <FaTrash />
               Delete Account
@@ -577,6 +611,7 @@ const Settings = () => {
           </div>
         </div>
       </div>
+      {confirmationModal && <ConfirmationModal modalData={confirmationModal} />}
     </div>
   )
 }

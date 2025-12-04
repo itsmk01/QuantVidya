@@ -118,7 +118,8 @@ const MyProfile = () => {
 							{/* Edit Button */}
 							<button
 								onClick={() => navigate("/dashboard/settings")}
-								className='bg-yellow-50 text-richblack-900 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-yellow-100 transition-all duration-200 hover:scale-105 shadow-lg'
+								className='bg-yellow-50 text-richblack-900 px-6 py-3 rounded-lg font-semibold flex items-center 
+											cursor-pointer gap-2 hover:bg-yellow-100 transition-all duration-200 hover:scale-105 shadow-lg'
 							>
 								<FaEdit />
 								<span>Edit Profile</span>
@@ -148,7 +149,8 @@ const MyProfile = () => {
 							</div>
 							<button
 								onClick={() => navigate("/dashboard/settings")}
-								className='text-yellow-50 hover:text-yellow-100 transition-colors p-2 hover:bg-richblack-700 rounded-lg'
+								className='text-yellow-50 hover:text-yellow-100 transition-colors p-2 hover:bg-richblack-700 
+											rounded-lg cursor-pointer'
 							>
 								<FaEdit className="text-xl" />
 							</button>
@@ -163,7 +165,8 @@ const MyProfile = () => {
 							<h2 className='text-xl font-semibold text-richblack-5'>Personal Details</h2>
 							<button
 								onClick={() => navigate("/dashboard/settings")}
-								className='bg-richblack-700 text-yellow-50 px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-richblack-600 transition-all duration-200'
+								className='bg-richblack-700 text-yellow-50 px-4 py-2 rounded-lg font-medium flex items-center gap-2 
+								         cursor-pointer hover:bg-richblack-600 transition-all duration-200'
 							>
 								<FaEdit />
 								<span>Edit</span>

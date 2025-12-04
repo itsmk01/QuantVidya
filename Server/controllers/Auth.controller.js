@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mailSender = require("../utils/mailSender");
 const Profile = require("../models/Profile");
-const passwordUpdate = require("../mail-template/passwordUpdate");
+const {passwordUpdated} = require("../mail-template/passwordUpdate");
 
 //generateAccessTokenAndRefreshToken
 const generateAccessAndRefereshTokens = async(userId) =>{
@@ -291,28 +291,30 @@ exports.refreshAccessToken = async (req, res) => {
 exports.changePassword = async (req, res) => {
     try{
         //Get data from req and validation
-        const {email, oldPassword, newPassword, confirmPassword} = req.body;
-        if(!email || !oldPassword || !newPassword || !confirmPassword){
-            return res.status(401).json({
+        const { currentPassword, newPassword, confirmPassword} = req.body;
+        const userId = req.user.id;
+
+        if( !currentPassword || !newPassword || !confirmPassword){
+            return res.status(404).json({
                 success: false,
                 message: "All fields are required !"
             });
         }
         //check newpassword and confirmpassword
         if(newPassword !== confirmPassword){
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
                 message: "NewPassword and ConfirmPassword are not matching !"
             })
         }
 
-        const user = await User.findOne({email});
+        const user = await User.findById(userId);
 
         //password not matched
-        if(!await bcrypt.compare(oldPassword, user.password)){
-            return res.status(401).json({
+        if(!await bcrypt.compare(currentPassword, user.password)){
+            return res.status(404).json({
                 success: false,
-                message: "Old Password is incorrect !"
+                message: "Current Password is incorrect !"
             });
         }
 
@@ -331,15 +333,18 @@ exports.changePassword = async (req, res) => {
         }
 
         //Update password in Db
-        await User.findOneAndUpdate({email},{password: newHashedPassword});
+        const updatedUser = await User.findByIdAndUpdate(userId,{password: newHashedPassword});
 
         //send email
         try{
-            const mailResponse = await mailSender(email, "Reg-Password Change", passwordUpdate(user.email, user.firstName + " " + user.lastName));
-            console.log("Mail Response for successfully changing password: ", mailResponse);
+          const mailResponse = await mailSender(updatedUser.email, 
+                                                "Reg-Password Change", 
+                                                passwordUpdated(updatedUser.email, updatedUser.firstName + " " + updatedUser.lastName));
+
+           console.log("Mail Response for successfully changing password: ", mailResponse);
         }
         catch(e){
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
                 message: "Issue in sending the email !"
             })

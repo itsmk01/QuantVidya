@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 const Profile = require("../models/Profile");
 const User = require("../models/User");
-const Course = require("..//models/Course");
+const Course = require("../models/Course");
+const Section = require("../models/Section");
+const SubSection = require("../models/SubSection");
+const CourseProgress = require("../models/CourseProgress");
+const RatingAndReview = require("../models/RatingAndReviews");
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
 
 //create profile
@@ -106,30 +110,100 @@ exports.deleteAccount = async(req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try{
-        //get id
+        //get id and password from request
         const userId = req.user.id;
-        const user = await User.findById(userId).session(session);
+        const { password } = req.body;
 
-        //validation
-        if(!user){
-            return res.status(404).json({
+        //validation - check if password provided
+        if(!password){
+            await session.abortTransaction();
+            await session.endSession();
+            return res.status(400).json({
                 success: false,
-                message: "User not found !"
+                message: "Password is required to delete account!"
             });
         }
 
-        //Remove user from all enrolled courses
+        const user = await User.findById(userId).session(session).populate().exec();
+        
+        //validation - check if user exists
+        if(!user){
+            await session.abortTransaction();
+            await session.endSession();
+            return res.status(404).json({
+                success: false,
+                message: "User not found!"
+            });
+        }
+
+        //verify password
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if(!isPasswordCorrect){
+            await session.abortTransaction();
+            await session.endSession();
+            return res.status(401).json({
+                success: false,
+                message: "Incorrect password!"
+            });
+        }
+
+        //Delete user's image from cloudinary if exists
+        if(user.additionalDetails.image){
+            const publicId = user.additionalDetails.image.split('/').pop().split('.')[0];
+            await cloudinary.uploader.destroy(`QuantVidya/${publicId}`);
+        }
+
+        //Get user's courses where they are instructor
+        const instructorCourses = await Course.find({instructor: userId}).session(session);
+        
+        //Delete all course thumbnails and content from cloudinary
+        for(const course of instructorCourses){
+            if(course.thumbnail){
+                const thumbnailPublicId = course.thumbnail.split('/').pop().split('.')[0];
+                await cloudinary.uploader.destroy(`QuantVidya/${thumbnailPublicId}`);
+            }
+            
+            //Delete course sections and subsections
+            for(const sectionId of course.courseContent){
+                const section = await Section.findById(sectionId).session(session);
+                if(section){
+                    //Delete subsection videos from cloudinary
+                    for(const subsectionId of section.subSection){
+                        const subsection = await SubSection.findById(subsectionId).session(session);
+                        if(subsection && subsection.videoUrl){
+                            const videoPublicId = subsection.videoUrl.split('/').pop().split('.')[0];
+                            await cloudinary.uploader.destroy(`QuantVidya/${videoPublicId}`, {resource_type: 'video'});
+                        }
+                        await SubSection.findByIdAndDelete(subsectionId, {session});
+                    }
+                    await Section.findByIdAndDelete(sectionId, {session});
+                }
+            }
+            
+            //Delete the course
+            await Course.findByIdAndDelete(course._id, {session});
+        }
+
+        //Remove user from all enrolled courses (as student)
         await Course.updateMany(
-            {studentEnrolled: userId},
-            {$pull: {studentEnrolled: userId}},
+            {studentsEnrolled: userId},
+            {$pull: {studentsEnrolled: userId}},
             {session}
         );
 
-        //delete Profile
-        const additionalDetailsId = user.additionalDetails;
-        await Profile.findByIdAndDelete({_id:additionalDetailsId}, {session});
+        //Delete user's course progress
+        await CourseProgress.deleteMany({userId: userId}, {session});
 
-        //delete User
+        //Delete user's rating and reviews
+        await RatingAndReview.deleteMany({user: userId}, {session});
+
+        //Delete Profile
+        const additionalDetailsId = user.additionalDetails;
+        if(additionalDetailsId){
+            await Profile.findByIdAndDelete(additionalDetailsId, {session});
+        }
+
+        //Delete User
         await User.findByIdAndDelete(userId, {session});
 
         await session.commitTransaction();
@@ -138,17 +212,18 @@ exports.deleteAccount = async(req, res) => {
         //return response
         return res.status(200).json({
             success: true,
-            message: "Account is deleted successfully !"
+            message: "Account deleted successfully!"
         });
 
     }
     catch(err){
         await session.abortTransaction();
         await session.endSession();
-        console.log(err);
-        return res.status(400).json({
+        console.error("Error during account deletion:", err);
+        return res.status(500).json({
             success: false,
-            message: "Error during deleting the Account !"
+            message: "Error during deleting the account!",
+            error: err.message
         });
     }
 }

@@ -8,15 +8,17 @@ const ConfirmationModal = ({ modalData }) => {
         <p className="text-2xl font-inter font-bold text-richblack-5">
             {modalData?.text1}
         </p>
-        <p className="font-semibold leading-6 mb-2 text-richblack-200">
+        <div className="font-semibold leading-6 mb-2 text-richblack-200">
             {modalData?.text2}
-        </p>
+        </div>
         <div className="flex gap-4">
           <IconBtn
             text={modalData?.btn1text}
             onclick={modalData?.btn1handler}
-            customClasses={"hover:bg-yellow-100 hover:scale-105 transition-all duration-300"}
-          />
+            customClasses={""}
+          >
+            {modalData?.btn1Icon}
+          </IconBtn>
           <button
             className="bg-richblack-200 text-richblack-900 flex items-center cursor-pointer gap-x-2 
                                 rounded-md py-2 px-5 font-semibold hover:bg-richblack-300 hover:scale-105 transition-all duration-300"

@@ -115,6 +115,7 @@ const SideBar = () => {
                 text1: "Are you sure?",
                 text2: "You will be logged out of your account.",
                 btn1text: "Logout",
+                btn1Icon: <VscSignOut/>,
                 btn2text: "Cancel",
                 btn1handler: () => dispatch(logout(navigate)),
                 btn2handler: () => setConfirmationModal(null)

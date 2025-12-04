@@ -21,7 +21,9 @@ export const userEndpoints = {
 
 //SETTING ENDPOINTS
 export const settingsEndpoints = {
-  UPDATE_PROFILE_API: BASE_URL + "/profile/updateProfile"
+  UPDATE_PROFILE_API: BASE_URL + "/profile/updateProfile",
+  CHANGEPASSWORD_API: BASE_URL + "/auth/change-password",
+  DELETE_ACCOUNT_API: BASE_URL + "/profile/deleteAccount"
 }
 
 // COURSE ENDPOINTS
