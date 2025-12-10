@@ -4,6 +4,7 @@ import {endpoints} from '../apis';
 import { setLoading, setUser, setToken } from '../../slices/authSlice';
 
 import {apiConnector} from '../apiconnector';
+import { resetCourseState, setCourse, setEditCourse, setStep } from '../../slices/courseSlice';
 
 const {
     SENDOTP_API,
@@ -159,9 +160,12 @@ export function logout(navigate) {
       
       // Clear Redux state
       dispatch(setUser(null));
+      dispatch(resetCourseState());
+      
       
       // Clear persisted storage
-      localStorage.removeItem('persist:root');
+      localStorage.removeItem('persist:auth');
+      localStorage.removeItem('persist:course');
       
       toast.success("Logged Out Successfully!");
       
@@ -173,7 +177,12 @@ export function logout(navigate) {
       
       // Even if backend fails, clear frontend state
       dispatch(setUser(null));
-      localStorage.removeItem('persist:root');
+      dispatch(resetCourseState());
+
+      // Clear persisted storage
+      localStorage.removeItem('persist:auth');
+      localStorage.removeItem('persist:course');
+      
       navigate("/login");
       
       toast.error("Logged out locally");

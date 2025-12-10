@@ -6,7 +6,7 @@ export default function IconBtn({
     outline = false,
     customClasses,
     type,
-    variant = text?.toLowerCase().includes("logout") ? "yellow" : "red"
+    variant = "yellow" // Changed: default to yellow, let parent control variant
   }) {
     
     // Define color schemes based on variant
@@ -19,7 +19,7 @@ export default function IconBtn({
       }
       // Default yellow variant
       return outline 
-        ? "border border-yellow-50 bg-transparent text-yellow-50 hover:bg-yellow-100" 
+        ? "border border-yellow-50 bg-transparent text-yellow-50 hover:text-richblack-900 hover:bg-yellow-100" 
         : "bg-yellow-50 text-richblack-900 hover:bg-yellow-100";
     };
     

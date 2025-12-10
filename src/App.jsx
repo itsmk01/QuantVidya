@@ -23,7 +23,8 @@ import {
 import About from "./pages/About";
 import ContactUs from "./pages/ContactUs";
 import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
-import Settings from "./components/core/Dashboard/Settings";
+import AddCourse from "./components/core/Dashboard/AddCourse/index"
+import Settings from "./components/core/Dashboard/Settings/index";
 
 function App() {
   const dispatch = useDispatch();
@@ -89,6 +90,8 @@ function App() {
           <Route path="/dashboard/enrolled-courses" element={<EnrolledCourses />} />
           <Route path="/dashboard/cart" element={<Cart />} />
           <Route path="/dashboard/settings" element={<Settings/>} />
+          {/* <Route path="/dashboard/instructor" element={<InstructorRoute><InstructorDashboard/></InstructorRoute>} /> */}
+          <Route path="/dashboard/add-course" element={<InstructorRoute><AddCourse/></InstructorRoute>} />
         </Route>
 
         {/* Error Routes */}

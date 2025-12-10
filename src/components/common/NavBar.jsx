@@ -13,7 +13,7 @@ import { courseEndpoints } from '../../services/apis';
 const NavBar = () => {
     const {user} = useSelector((state) => state.auth);
     const {totalItems} = useSelector((state) => state.cart);
-    const {GETALLCATEGORY_API} = courseEndpoints;
+    const {COURSE_CATEGORIES_API} = courseEndpoints;
     const [subLinks, setSubLinks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,7 +26,8 @@ const NavBar = () => {
     const fetchSubLinks = async () => {
             setLoading(true);
             try{
-                const response = await apiConnector("GET", GETALLCATEGORY_API, null);
+                const response = await apiConnector("GET", COURSE_CATEGORIES_API, null);
+                // console.log("categories in navbar is : " , response.data.allCategory);
                 setSubLinks(response.data.allCategory);
             }catch(error){
                 console.log("Error while fetching categories", error);
@@ -118,7 +119,7 @@ const NavBar = () => {
                               ) : subLinks && subLinks.length ? (
                                 <div className="space-y-1">
                                   {subLinks
-                                    ?.filter((subLink) => subLink?.courses?.length > 0)
+                                    ?.filter((subLink) => subLink?.courses?.length >= 0)
                                     ?.map((subLink, i) => (
                                       <Link
                                         to={`/catalog/${subLink.name

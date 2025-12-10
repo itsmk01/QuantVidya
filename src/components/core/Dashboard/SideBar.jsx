@@ -19,7 +19,7 @@ const SideBar = () => {
 
   if (profileLoading || authLoading) {
     return (
-      <div className="grid h-[calc(100vh-3.5rem)] min-w-[220px] items-center border-r border-r-richblack-700 bg-richblack-900">
+      <div className="grid h-[calc(100vh-3.5rem-1px)] min-w-[220px] items-center border-r border-r-richblack-700 bg-richblack-900">
         <div className="flex flex-col items-center gap-3">
           <div className="spinner"></div>
           <p className="text-richblack-400 text-sm">Loading...</p>
@@ -118,7 +118,7 @@ const SideBar = () => {
                 btn1Icon: <VscSignOut/>,
                 btn2text: "Cancel",
                 btn1handler: () => dispatch(logout(navigate)),
-                btn2handler: () => setConfirmationModal(null)
+                btn2handler: () => setConfirmationModal(null),
               })
             }
           >

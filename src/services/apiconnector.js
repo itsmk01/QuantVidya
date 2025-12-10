@@ -1,6 +1,9 @@
 import axios from "axios";
 import { endpoints } from "./apis";
 
+import { store } from "../config/store";
+import { setUser } from "../slices/authSlice";
+
 export const axiosInstance = axios.create({
   withCredentials: true, // CRITICAL: Sends cookies with every request
   headers: {
@@ -41,6 +44,7 @@ axiosInstance.interceptors.response.use(
         console.log("❌ Refresh token expired - redirecting to login");
         
         // Clear Redux state
+        store.dispatch(setUser(null));
         localStorage.removeItem('persist:root');
         
         // Redirect to login

@@ -2,6 +2,7 @@ import React from "react";
 import IconBtn from "./IconButton";
 
 const ConfirmationModal = ({ modalData }) => {
+  
   return (
     <div className="fixed inset-0 z-[1000] !mt-0 grid place-items-center overflow-auto bg-white/10 backdrop-blur-sm">
       <div className="flex flex-col gap-4 rounded-md bg-richblack-900 border border-richblack-100 p-6 shadow-lg">
@@ -16,6 +17,7 @@ const ConfirmationModal = ({ modalData }) => {
             text={modalData?.btn1text}
             onclick={modalData?.btn1handler}
             customClasses={""}
+            variant={modalData?.variant}
           >
             {modalData?.btn1Icon}
           </IconBtn>

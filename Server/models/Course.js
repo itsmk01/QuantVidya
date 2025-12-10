@@ -39,6 +39,9 @@ const course_schema = new mongoose.Schema({
         type: [String],
         required: true,
     },
+    instructions: {
+		type: [String],
+	},
     courseContent:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Section",
