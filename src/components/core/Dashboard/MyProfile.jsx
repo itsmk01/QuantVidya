@@ -206,7 +206,7 @@ const MyProfile = () => {
 					<div className='bg-gradient-to-br from-blue-900 to-blue-800 p-6 rounded-xl border border-blue-700 shadow-lg'>
 						<p className='text-blue-200 text-sm mb-1'>Member Since</p>
 						<p className='text-white text-xl font-bold'>
-							{new Date(user?.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
+							{new Date(user?.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: "numeric" })}
 						</p>
 					</div>
 					<div className='bg-gradient-to-br from-purple-900 to-purple-800 p-6 rounded-xl border border-purple-700 shadow-lg'>

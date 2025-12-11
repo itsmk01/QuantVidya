@@ -250,65 +250,68 @@ export const deleteSubSection = async (data) => {
 }
 
 // fetching all courses under a specific instructor
-export const fetchInstructorCourses = async (token) => {
+export const fetchInstructorCourses = async () => {
   let result = []
-  const toastId = toast.loading("Loading...")
+  // const toastId = toast.loading("Loading...")
   try {
     const response = await apiConnector(
       "GET",
-      GET_ALL_INSTRUCTOR_COURSES_API,
-      null,
-      {
-        Authorization: `Bearer ${token}`,
-      }
+      GET_ALL_INSTRUCTOR_COURSES_API, null,
     )
     console.log("INSTRUCTOR COURSES API RESPONSE............", response)
     if (!response?.data?.success) {
       throw new Error("Could Not Fetch Instructor Courses")
     }
+    // toast.success("Instructor Courses Fetched")
     result = response?.data?.data
   } catch (error) {
     console.log("INSTRUCTOR COURSES API ERROR............", error)
-    toast.error(error.message)
+    // if (error.response && error.response.data && error.response.data.message) {
+    //   toast.error(error.response.data.message, {duration: 3000});
+    // } 
+    // else {
+    //   toast.error("Could not login. Please try again.", {duration: 3000});
+    // }
+  }
+  // toast.dismiss(toastId)
+  return result
+}
+
+// delete a course
+export const deleteCourse = async (data) => {
+  let result = null
+  const toastId = toast.loading("Loading...")
+  try {
+    const response = await apiConnector("DELETE", DELETE_COURSE_API, data)
+    console.log("DELETE COURSE API RESPONSE............", response)
+    if (!response?.data?.success) {
+      throw new Error("Could Not Delete Course")
+    }
+    result = response?.data?.success
+    console.log("result", result)
+    toast.success("Course Deleted")
+  } catch (error) {
+    console.log("DELETE COURSE API ERROR............", error)
+    if (error.response && error.response.data && error.response.data.message) {
+      toast.error(error.response.data.message, {duration: 3000});
+    } 
+    else {
+      toast.error("Could not login. Please try again.", {duration: 3000});
+    }
   }
   toast.dismiss(toastId)
   return result
 }
 
-// delete a course
-export const deleteCourse = async (data, token) => {
-  const toastId = toast.loading("Loading...")
-  try {
-    const response = await apiConnector("DELETE", DELETE_COURSE_API, data, {
-      Authorization: `Bearer ${token}`,
-    })
-    console.log("DELETE COURSE API RESPONSE............", response)
-    if (!response?.data?.success) {
-      throw new Error("Could Not Delete Course")
-    }
-    toast.success("Course Deleted")
-  } catch (error) {
-    console.log("DELETE COURSE API ERROR............", error)
-    toast.error(error.message)
-  }
-  toast.dismiss(toastId)
-}
-
 // get full details of a course
-export const getFullDetailsOfCourse = async (courseId, token) => {
+export const getFullDetailsOfCourse = async (courseId) => {
   const toastId = toast.loading("Loading...")
   //   dispatch(setLoading(true));
   let result = null
   try {
     const response = await apiConnector(
-      "POST",
-      GET_FULL_COURSE_DETAILS_AUTHENTICATED,
-      {
-        courseId,
-      },
-      {
-        Authorization: `Bearer ${token}`,
-      }
+      "GET",
+      `${GET_FULL_COURSE_DETAILS_AUTHENTICATED}/${courseId}`
     )
     console.log("COURSE_FULL_DETAILS_API API RESPONSE............", response)
 

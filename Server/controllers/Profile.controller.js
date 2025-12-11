@@ -272,3 +272,51 @@ exports.getAllUsers = async(req, res) => {
         });
     }
 }
+
+//get instructor data
+exports.getInstructorData = async (req, res) => {
+  try {
+    const instructorId = req.user.id; // comes from auth middleware
+
+    // Fetch instructor details
+    const instructor = await User.findById(instructorId);
+    if (!instructor) {
+      return res.status(404).json({
+        success: false,
+        message: "Instructor not found",
+      });
+    }
+
+    // Fetch all courses created by instructor
+    const courses = await Course.find({ instructor: instructorId })
+      .populate("studentEnrolled").exec();
+
+    let totalStudents = 0;
+    let totalIncome = 0;
+
+    // Calculating stats
+    courses.forEach((course) => {
+      const enrolled = course.studentsEnrolled?.length || 0;
+      totalStudents += enrolled;
+      totalIncome += enrolled * (course.price || 0);
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        instructorName: instructor.firstName + " " + instructor.lastName,
+        totalCourses: courses.length,
+        totalStudents,
+        totalIncome,
+        courses,  // you can remove this if not required
+      },
+    });
+
+  } catch (error) {
+    console.log("Error in Instructor Dashboard:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while fetching instructor dashboard data",
+    });
+  }
+};

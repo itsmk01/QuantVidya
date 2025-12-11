@@ -29,7 +29,12 @@ exports.createSection = async(req , res) => {
                                                                         $push: {courseContent: newSection[0]._id}
                                                                     }, 
                                                                     {new: true, session})
-                                                                    .populate("courseContent")
+                                                                    .populate({
+                                                                      path: "courseContent",
+                                                                      populate: {
+                                                                        path: "subSection",
+                                                                      },
+                                                                    })
                                                                     .exec();
 
         //commit transaction
@@ -73,7 +78,13 @@ exports.updateSection = async(req , res) => {
         //create entry in db
         const updatedSection = await Section.findByIdAndUpdate(sectionId,{$set:{sectionName}}, {new:true});
 
-        const updatedCourseDetails = await Course.findById(courseId).populate("courseContent").exec();
+        const updatedCourseDetails = await Course.findById(courseId)
+                                                .populate({
+                                                  path: "courseContent",
+                                                  populate: {
+                                                    path: "subSection",
+                                                  },
+                                                }).exec();
 
         //return response
         return res.status(200).json({
@@ -148,7 +159,12 @@ exports.deleteSection = async (req, res) => {
                                                                 courseId,
                                                                 { $pull: { courseContent: sectionId } },
                                                                 { new: true }
-                                                              ).populate("courseContent").exec();
+                                                              ).populate({
+                                                                  path: "courseContent",
+                                                                  populate: {
+                                                                    path: "subSection",
+                                                                  },
+                                                                }).exec();
 
     // delete section
     await Section.findByIdAndDelete(sectionId);

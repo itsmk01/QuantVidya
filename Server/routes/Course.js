@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const { auth, isInstructor , isStudent, isAdmin} = require("../middlewares/auth");
-const { createCourse, getAllCourses, getCourseDetails, editCourse } = require("../controllers/Course.controller");
+const { createCourse, getAllCourses, getFullCourseDetails, editCourse, getInstructorCourses, deleteCourse } = require("../controllers/Course.controller");
 const { createSection, updateSection, deleteSection } = require("../controllers/Section.controller");
 const { createSubSection, updateSubSection, deleteSubSection } = require("../controllers/SubSection.controller");
 const { createRating, getAverageRating, getAllRatingOfCourse, getAllRatingAndReviews } = require("../controllers/RatingAndReviews.controller");
@@ -12,6 +12,7 @@ const { createCategory, getAllCategory, categoryPageDetails } = require("../cont
 //Course, section and sub-section routes
 router.post("/createCourse", auth, isInstructor, createCourse);
 router.put("/editCourse", auth, isInstructor, editCourse);
+router.delete("/deleteCourse", auth, isInstructor, deleteCourse);
 router.post("/addSection", auth, isInstructor, createSection);
 router.put("/updateSection", auth, isInstructor, updateSection );
 router.delete("/deleteSection", auth, isInstructor, deleteSection);
@@ -19,7 +20,8 @@ router.post("/addSubSection", auth , isInstructor, createSubSection);
 router.put("/updateSubSection", auth, isInstructor, updateSubSection);
 router.delete("/deleteSubSection", auth , isInstructor, deleteSubSection);
 router.get("/getAllCourses", getAllCourses);
-router.get("/getCourseDetails/:courseId", getCourseDetails);
+router.get("/getFullCourseDetails/:courseId", getFullCourseDetails);
+router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses);
 
 
 //Routes for rating and review

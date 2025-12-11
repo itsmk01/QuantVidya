@@ -25,6 +25,9 @@ import ContactUs from "./pages/ContactUs";
 import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
 import AddCourse from "./components/core/Dashboard/AddCourse/index"
 import Settings from "./components/core/Dashboard/Settings/index";
+import MyCourses from "./components/core/Dashboard/MyCourses";
+import InstructorDashboard from "./components/core/Dashboard/InstructorDashboard";
+import EditCourse from "./components/core/Dashboard/EditCourse";
 
 function App() {
   const dispatch = useDispatch();
@@ -90,8 +93,10 @@ function App() {
           <Route path="/dashboard/enrolled-courses" element={<EnrolledCourses />} />
           <Route path="/dashboard/cart" element={<Cart />} />
           <Route path="/dashboard/settings" element={<Settings/>} />
-          {/* <Route path="/dashboard/instructor" element={<InstructorRoute><InstructorDashboard/></InstructorRoute>} /> */}
+          <Route path="/dashboard/instructor" element={<InstructorRoute><InstructorDashboard/></InstructorRoute>} />
           <Route path="/dashboard/add-course" element={<InstructorRoute><AddCourse/></InstructorRoute>} />
+          <Route path="/dashboard/my-courses" element={<InstructorRoute><MyCourses/></InstructorRoute>} />
+          <Route path="dashboard/edit-course/:courseId" element={<InstructorRoute><EditCourse /></InstructorRoute>} />
         </Route>
 
         {/* Error Routes */}

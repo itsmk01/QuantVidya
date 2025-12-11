@@ -3,7 +3,7 @@ import { apiConnector } from "../apiconnector";
 import { userEndpoints } from "../apis";
 import { setUser, setLoading } from '../../slices/authSlice';
 
-const { CONTACT_US_API, GETUSER_API  } = userEndpoints;
+const { CONTACT_US_API, GETUSER_API, GET_INSTRUCTOR_DATA_API  } = userEndpoints;
 
 export function submitContactUs(data) {
     return async (dispatch) => {
@@ -76,4 +76,28 @@ export function getUserDetails() {
       dispatch(setLoading(false));
     }
   };
+}
+
+export const getInstructorData = async () => {
+  let result = null
+  // const toastId = toast.loading("Loading...")
+  try {
+    const response = await apiConnector("GET", GET_INSTRUCTOR_DATA_API, null)
+    console.log("GET INSTRUCTOR DATA API RESPONSE............", response)
+    if (!response?.data?.success) {
+      throw new Error("Could Not Update Lecture")
+    }
+    // toast.success("INSTRUCTOR Details Fetched")
+    result = response?.data?.data
+  } catch (error) {
+    console.log("GET USER DETAILS API ERROR............", error)
+    if (error.response && error.response.data && error.response.data.message) {
+      toast.error(error.response.data.message, {duration: 3000});
+    } 
+    else {
+      toast.error("Could not fetch instructor data.", {duration: 3000});
+    }
+  }
+  // toast.dismiss(toastId)
+  return result
 }
