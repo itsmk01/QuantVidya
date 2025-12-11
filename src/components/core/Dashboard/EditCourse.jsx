@@ -4,10 +4,9 @@ import { useParams, useNavigate } from "react-router-dom"
 import { FaArrowLeft, FaBook, FaExclamationTriangle } from "react-icons/fa"
 
 import {
-  fetchCourseDetails,
   getFullDetailsOfCourse,
 } from "../../../services/operations/courseDetailsAPI"
-import { setCourse, setEditCourse } from "../../../slices/courseSlice"
+import { resetCourseState, setCourse, setEditCourse } from "../../../slices/courseSlice"
 import RenderSteps from "./AddCourse/RenderSteps"
 
 export default function EditCourse() {
@@ -54,7 +53,10 @@ export default function EditCourse() {
           <div className="lg:px-10 lg:py-8 p-6">
             <div className="flex items-center gap-4 mb-4">
               <button
-                onClick={() => navigate("/dashboard/my-courses")}
+                onClick={() => {
+                    navigate("/dashboard/my-courses");
+                    dispatch(resetCourseState());
+                }}
                 className="p-2 hover:bg-richblack-700 rounded-lg transition-all duration-200 group"
                 title="Back to My Courses"
               >

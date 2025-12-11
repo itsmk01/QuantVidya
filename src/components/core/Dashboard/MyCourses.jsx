@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react"
 import { VscAdd } from "react-icons/vsc"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 
 import { fetchInstructorCourses } from "../../../services/operations/courseDetailsAPI"
 import IconBtn from "../../common/IconButton"
 import CoursesTable from "./InstructorCourses/CoursesTable"
+import { resetCourseState } from "../../../slices/courseSlice"
 
 export default function MyCourses() {
-  const { token } = useSelector((state) => state.auth)
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(false)
@@ -58,12 +59,15 @@ export default function MyCourses() {
                 </p>
               </div>
               <button
-                onClick={() => navigate("/dashboard/add-course")}
+                onClick={() =>{
+                  dispatch(resetCourseState())
+                  navigate("/dashboard/add-course")
+                }}
                 className="bg-yellow-50 text-richblack-900 px-6 py-3 rounded-lg font-semibold flex items-center 
                           cursor-pointer gap-2 hover:bg-yellow-100 transition-all duration-200 hover:scale-105 shadow-lg"
               >
                 <VscAdd className="text-xl" />
-                <span>Add Course</span>
+                <span>Add New Course</span>
               </button>
             </div>
           </div>

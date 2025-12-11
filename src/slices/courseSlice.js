@@ -5,6 +5,7 @@ const initialState = {
   course: null,
   editCourse: false,
   paymentLoading: false,
+  resetId: Date.now(),
 }
 
 const courseSlice = createSlice({
@@ -27,6 +28,7 @@ const courseSlice = createSlice({
       state.step = 1
       state.course = null
       state.editCourse = false
+      state.resetId = Date.now()
     },
   },
 })
