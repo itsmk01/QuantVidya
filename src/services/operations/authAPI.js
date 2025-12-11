@@ -122,12 +122,13 @@ export function logIn(email,password,navigate){
                 throw new Error(response.data.message)
             }
 
-            const userImage = response.data?.user?.image
-                ? response.data.user.image
+            console.log("User : ", response.data.user);
+            const userImage = response.data?.user?.additionalDetails?.image
+                ? response.data.user.additionalDetails.image
                 : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.user.firstName} ${response.data.user.lastName}`;
             
             const userData = { ...response.data.user, image: userImage };
-            
+            console.log
             // Set user in Redux
             dispatch(setUser(userData));
 
