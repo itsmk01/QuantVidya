@@ -17,6 +17,7 @@ export const userEndpoints = {
   CONTACT_US_API: BASE_URL + "/user/contact-us/submit",
   GETUSER_API: BASE_URL + "/auth/me",
   GET_INSTRUCTOR_DATA_API: BASE_URL + "/profile/getInstructorData",
+  GET_USER_ENROLLED_COURSES: BASE_URL + "/profile/enrolled-courses",
  
 }
 

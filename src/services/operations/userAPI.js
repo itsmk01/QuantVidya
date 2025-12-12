@@ -3,7 +3,7 @@ import { apiConnector } from "../apiconnector";
 import { userEndpoints } from "../apis";
 import { setUser, setLoading } from '../../slices/authSlice';
 
-const { CONTACT_US_API, GETUSER_API, GET_INSTRUCTOR_DATA_API  } = userEndpoints;
+const { CONTACT_US_API, GETUSER_API, GET_INSTRUCTOR_DATA_API , GET_USER_ENROLLED_COURSES } = userEndpoints;
 
 export function submitContactUs(data) {
     return async (dispatch) => {
@@ -97,6 +97,24 @@ export const getInstructorData = async () => {
     else {
       toast.error("Could not fetch instructor data.", {duration: 3000});
     }
+  }
+  // toast.dismiss(toastId)
+  return result
+}
+
+export const getUserEnrolledCourses = async () => {
+  // const toastId = toast.loading("Loading...")
+  let result = []
+  try {
+    const response = await apiConnector("GET", GET_USER_ENROLLED_COURSES);
+    console.log("GET USER ENROLLED COURSES API RESPONSE............", response)
+    if (!response?.data?.success) {
+      throw new Error("Could Not Fetch Course Categories")
+    }
+    result = response?.data?.data
+  } catch (error) {
+    console.log("GET_ALL_COURSE_API API ERROR............", error)
+    toast.error(error.message)
   }
   // toast.dismiss(toastId)
   return result
