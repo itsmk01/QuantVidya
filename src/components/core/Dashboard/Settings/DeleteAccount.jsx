@@ -35,7 +35,7 @@ const DeleteAccount = () => {
           toast.error("Please enter your password")
           return
         }
-        dispatch(deleteAccount(navigate, passwordInput))
+        dispatch(deleteAccount(passwordInput, navigate))
         setConfirmationModal(null)
       },
       btn2handler: () => {

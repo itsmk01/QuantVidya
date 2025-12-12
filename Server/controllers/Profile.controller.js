@@ -6,7 +6,8 @@ const Section = require("../models/Section");
 const SubSection = require("../models/SubSection");
 const CourseProgress = require("../models/CourseProgress");
 const RatingAndReview = require("../models/RatingAndReviews");
-const { uploadImageToCloudinary } = require("../utils/imageUploader");
+const { uploadImageToCloudinary, deleteImageFromCloudinary, deleteVideoFromCloudinary } = require("../utils/imageUploader");
+const bcrypt = require("bcrypt");
 
 //create profile
 
@@ -29,7 +30,7 @@ exports.updateProfile = async(req, res) => {
             })
         }
 
-        const user = await User.findById(userId)
+        const user = await User.findById(userId).populate("additionalDetails").session(session).exec();
         if(!user){
             await session.abortTransaction()
             session.endSession()
@@ -50,6 +51,21 @@ exports.updateProfile = async(req, res) => {
         
         // Upload profile picture if provided
         if(profilePic){
+            //delete existing image from cloudinary
+            if(user.additionalDetails.image){
+                try{
+                    const publicId = `${process.env.FOLDER_NAME}/${user.additionalDetails.image.split('/').pop().split('.')[0]}`;
+                    await deleteImageFromCloudinary(publicId);
+                }catch(err){
+                    console.error("Error deleting profile image from cloudinary:", err);
+                    return res.status(500).json({
+                        success: false,
+                        message: "Error deleting profile image from cloudinary!",
+                        error: err.message
+                    });
+                }
+            }
+            //upload new image
             const uploadDetails = await uploadImageToCloudinary(
                 profilePic, 
                 process.env.FOLDER_NAME
@@ -124,7 +140,7 @@ exports.deleteAccount = async(req, res) => {
             });
         }
 
-        const user = await User.findById(userId).session(session).populate().exec();
+        const user = await User.findById(userId).session(session).populate("additionalDetails").exec();
         
         //validation - check if user exists
         if(!user){
@@ -149,34 +165,67 @@ exports.deleteAccount = async(req, res) => {
 
         //Delete user's image from cloudinary if exists
         if(user.additionalDetails.image){
-            const publicId = user.additionalDetails.image.split('/').pop().split('.')[0];
-            await cloudinary.uploader.destroy(`QuantVidya/${publicId}`);
+            try{
+                const publicId = `${process.env.FOLDER_NAME}/${user.additionalDetails.image.split('/').pop().split('.')[0]}`;
+                await deleteImageFromCloudinary(publicId);
+            }catch(err){
+                console.error("Error deleting profile image from cloudinary:", err);
+                return res.status(500).json({
+                    success: false,
+                    message: "Error deleting profile image from cloudinary!",
+                    error: err.message
+                });
+            }
+            
         }
 
         //Get user's courses where they are instructor
-        const instructorCourses = await Course.find({instructor: userId}).session(session);
+        const instructorCourses = await Course.find({instructor: userId}).session(session).populate({
+                                                                                                path: "courseContent",
+                                                                                                populate: {
+                                                                                                    path: "subSection",
+                                                                                                }
+                                                                                            }).exec();
         
         //Delete all course thumbnails and content from cloudinary
         for(const course of instructorCourses){
             if(course.thumbnail){
-                const thumbnailPublicId = course.thumbnail.split('/').pop().split('.')[0];
-                await cloudinary.uploader.destroy(`QuantVidya/${thumbnailPublicId}`);
+                try{
+                    const publicId = `${process.env.FOLDER_NAME}/${course.thumbnail.split('/').pop().split('.')[0]}`;
+                    await deleteImageFromCloudinary(publicId);
+                }catch(err){
+                    console.error("Error deleting course thumbnail from cloudinary:", err);
+                    return res.status(500).json({
+                        success: false,
+                        message: "Error deleting course thumbnail from cloudinary!",
+                        error: err.message
+                    });
+                }
+                
             }
             
             //Delete course sections and subsections
-            for(const sectionId of course.courseContent){
-                const section = await Section.findById(sectionId).session(session);
+            for(const section of course.courseContent){
                 if(section){
                     //Delete subsection videos from cloudinary
-                    for(const subsectionId of section.subSection){
-                        const subsection = await SubSection.findById(subsectionId).session(session);
+                    for(const subsection of section.subSection){
                         if(subsection && subsection.videoUrl){
-                            const videoPublicId = subsection.videoUrl.split('/').pop().split('.')[0];
-                            await cloudinary.uploader.destroy(`QuantVidya/${videoPublicId}`, {resource_type: 'video'});
+                            try{
+                                const publicId = `${process.env.FOLDER_NAME}/${subsection.videoUrl.split('/').pop().split('.')[0]}`;
+                                await deleteVideoFromCloudinary(publicId);
+                            }catch(err){
+                                console.error("Error deleting course videos from cloudinary:", err);
+                                return res.status(500).json({
+                                    success: false,
+                                    message: "Error deleting course videos from cloudinary!",
+                                    error: err.message
+                                });
+                            }
+                            
                         }
-                        await SubSection.findByIdAndDelete(subsectionId, {session});
+                        await SubSection.findByIdAndDelete(subsection._id, {session});
                     }
-                    await Section.findByIdAndDelete(sectionId, {session});
+                    await Section.findByIdAndDelete(section._id, {session});
                 }
             }
             

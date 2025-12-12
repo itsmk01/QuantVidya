@@ -68,7 +68,7 @@ export function changePassword(passwordData){
     }
 }
 
-export function deleteAccount(navigate, password) {
+export function deleteAccount(password , navigate) {
   return async (dispatch) => {
     const toastId = toast.loading("Deleting Account...");
 
@@ -81,15 +81,12 @@ export function deleteAccount(navigate, password) {
       
       // Clear Redux state
       dispatch(setUser(null));
-      dispatch(setToken(null)); // Also clear token
       
       // Clear persisted storage
       localStorage.removeItem('persist:root');
-      localStorage.removeItem('token'); // Clear token from localStorage 
-      
       toast.success("Account Deleted Successfully!");
       
-      navigate("/signup");
+     navigate("/signup");
       
     } catch (error) {
       console.error("DELETE ACCOUNT ERROR:", error);
