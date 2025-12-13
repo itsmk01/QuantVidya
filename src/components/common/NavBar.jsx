@@ -66,7 +66,7 @@ const NavBar = () => {
     }, [isMobileMenuOpen]);
 
     return (
-        <div className='border-b-[1px] border-richblack-700 '>
+        <div className='border-b-[1px] border-richblack-700 fixed top-0 left-0 w-full bg-richblack-900 z-50'>
 
             {/* Desktop Menu */}
             <div className='w-11/12 max-w-[1260px] mx-auto h-14 flex flex-row items-center justify-between'>

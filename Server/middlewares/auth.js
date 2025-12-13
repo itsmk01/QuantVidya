@@ -3,22 +3,24 @@ const User = require("../models/User");
 
 exports.auth = async (req, res, next) => {
   try {
-    let token = req.cookies?.accessToken || 
-                req.body.accessToken || 
-                req.header("Authorization")?.replace("Bearer ", "");
+    const token =
+      req.cookies?.accessToken ||
+      req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "Token missing" 
+      return res.status(401).json({
+        success: false,
+        message: "Access token missing",
       });
     }
 
     try {
-      // Verify access token
       const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-      const user = await User.findById(decoded.id).select("-password -refreshToken");
-      
+
+      const user = await User.findById(decoded.id).select(
+        "-password -refreshToken"
+      );
+
       if (!user) {
         return res.status(401).json({
           success: false,
@@ -27,18 +29,24 @@ exports.auth = async (req, res, next) => {
       }
 
       req.user = user;
-      return next();
+      next();
 
-    } catch (err) {
-      // If access token expired, client will call /refresh-token endpoint
-      // No need to handle refresh here - keep it simple!
-      return res.status(401).json({ 
-        success: false, 
-        message: "Token expired or invalid" 
+    } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        return res.status(401).json({
+          success: false,
+          message: "Access token expired",
+          tokenExpired: true, // 👈 FRONTEND SIGNAL
+        });
+      }
+
+      return res.status(401).json({
+        success: false,
+        message: "Invalid access token",
       });
     }
-  } catch (err) {
-    console.error("Auth middleware error:", err);
+  } catch (error) {
+    console.error("Auth middleware error:", error);
     return res.status(500).json({
       success: false,
       message: "Authentication failed",

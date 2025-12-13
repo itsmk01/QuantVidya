@@ -33,6 +33,6 @@ router.get("/getAllRatingAndReviews", getAllRatingAndReviews);
 //create category by admin
 router.post("/createCategory", auth , isAdmin, createCategory);
 router.get("/getAllCategories", getAllCategory);
-router.get("/getCategoryPageDetails", categoryPageDetails);
+router.post("/getCategoryPageDetails", categoryPageDetails);
 
 module.exports = router;

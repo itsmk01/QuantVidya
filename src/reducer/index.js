@@ -21,10 +21,17 @@ const coursePersistConfig = {
   whitelist: ["step", "course", "editCourse"],
 };
 
+const cartPersistConfig = {
+  key: "cart",
+  version: 1,
+  storage,
+  whitelist: ["cart", "totalItems", "total"],
+};
+
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),  // Wrap only auth
   profile: profileReducer,
-  cart: cartReducer,
+  cart: persistReducer(coursePersistConfig, cartReducer),
   course: persistReducer(coursePersistConfig, courseReducer),
 });
 

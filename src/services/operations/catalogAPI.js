@@ -1,0 +1,74 @@
+import { toast } from "react-hot-toast"
+import {apiConnector} from '../apiconnector';
+import { categoriesEndpoint } from "../apis"
+
+
+const { CATALOG_PAGE_API } = categoriesEndpoint;
+
+export const getCatalogPageData = async (categoryName) => {
+//   const toastId = toast.loading("Loading...")
+  let result = []
+  
+  try {
+    const response = await apiConnector(
+      "POST",
+      CATALOG_PAGE_API,
+      {categoryName }
+    )
+    // console.log("CATALOG PAGE DATA API RESPONSE............", response);
+    if (!response?.data?.success) {
+      throw new Error("Could Not Fetch Category page data")
+    }
+    
+    result = response?.data?.data
+    // toast.success("Catalog data loaded successfully")
+  } catch (error) {
+    console.log("CATALOG PAGE DATA API ERROR............", error)
+    toast.error(error.message)
+    result = error.response?.data
+  }
+  
+//   toast.dismiss(toastId)
+  return result
+}
+
+export const getAllCategories = async () => {
+  let result = []
+  
+  try {
+    const response = await apiConnector("GET", catalogData.CATEGORIES_API)
+    
+    if (!response?.data?.success) {
+      throw new Error("Could Not Fetch Categories")
+    }
+    
+    result = response?.data?.data
+  } catch (error) {
+    console.log("GET ALL CATEGORIES API ERROR............", error)
+    toast.error(error.message)
+  }
+  
+  return result
+}
+
+export const getAllCourses = async () => {
+  const toastId = toast.loading("Loading...")
+  let result = []
+  
+  try {
+    const response = await apiConnector("GET", catalogData.ALL_COURSES_API)
+    
+    if (!response?.data?.success) {
+      throw new Error("Could Not Fetch All Courses")
+    }
+    
+    result = response?.data?.data
+    toast.success("All courses loaded successfully")
+  } catch (error) {
+    console.log("GET ALL COURSES API ERROR............", error)
+    toast.error(error.message)
+  }
+  
+  toast.dismiss(toastId)
+  return result
+}

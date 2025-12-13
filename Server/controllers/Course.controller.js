@@ -272,7 +272,12 @@ exports.editCourse = async (req, res) => {
       new: true,
       runValidators: true,
       session,
-    });
+    }).populate({
+      path: "courseContent",
+      populate: {
+        path: "subSection",
+      }
+    }).exec();
 
     //Commit Transaction
     await session.commitTransaction();
