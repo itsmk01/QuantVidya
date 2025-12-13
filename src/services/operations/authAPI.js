@@ -2,7 +2,7 @@ import {toast} from 'react-hot-toast';
 import {persistor} from '../../config/store';
 import {endpoints} from '../apis';
 import { setLoading, setUser, setToken } from '../../slices/authSlice';
-
+import { useSelector } from 'react-redux';
 import {apiConnector} from '../apiconnector';
 import { resetCourseState, setCourse, setEditCourse, setStep } from '../../slices/courseSlice';
 
@@ -17,6 +17,7 @@ const {
     GETUSER_API,
     REFRESHACCESSTOKEN_API,
 } = endpoints;
+
 
 export function sendOtp(email,purpose, navigate){
     return async(dispatch) => {
@@ -228,39 +229,54 @@ export function getResetPasswordToken(email, setEmailSent, navigate){
 }
 
 
-export function resetPassword(password, confirmPassword, token, navigate){
-    return async(dispatch) => {
-        const toastId = toast.loading("Loading...");
-        dispatch(setLoading(true));
-        try{
-            const response = await apiConnector("PUT", RESETPASSWORD_API, {
-                password,
-                confirmPassword,
-                token,
-            });
-            console.log("RESETPASSWORD API RESPONSE...", response);
-            console.log(response.data.success);
+export function resetPassword(password, confirmPassword, token, navigate) {
+  return async (dispatch, getState) => {
+    const { user } = getState().auth   // ✅ FIX HERE
 
-            if (!response.data.success) {
-                throw new Error(response.data.message)
-            }
+    const toastId = toast.loading("Loading...")
+    dispatch(setLoading(true))
 
-            toast.success("Password is updated successfully", {duration: 3000});
-            navigate("/login");
-        }
-        catch (error) {
-            console.log("ERROR during RESETPASSWORD............", error);
+    try {
+      const response = await apiConnector("PUT", RESETPASSWORD_API, {
+        password,
+        confirmPassword,
+        token,
+      })
 
-            // If backend sends a message, show it
-            if (error.response && error.response.data && error.response.data.message) {
-                toast.error(error.response.data.message, {duration: 3000});
-            } 
-            else {
-                toast.error("Could not reset password . Please try again.", {duration: 3000});
-            }
-            navigate("/forgot-password");
-        }
-        dispatch(setLoading(false));
-        toast.dismiss(toastId);
+      console.log("RESETPASSWORD API RESPONSE...", response)
+
+      if (!response.data.success) {
+        throw new Error(response.data.message)
+      }
+
+      toast.success("Password updated successfully", { duration: 3000 })
+
+      // ✅ Navigate based on auth state
+      if (!user) {
+        navigate("/login")
+      } else {
+        navigate("/dashboard/settings")
+      }
+
+    } catch (error) {
+      console.log("ERROR during RESETPASSWORD...", error)
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        "Could not reset password. Please try again."
+
+      toast.error(errorMessage, { duration: 3000 })
+
+      // Optional: still redirect
+      if (!user) {
+        navigate("/login")
+      } else {
+        navigate("/dashboard/settings")
+      }
+
+    } finally {
+      dispatch(setLoading(false))
+      toast.dismiss(toastId)
     }
+  }
 }

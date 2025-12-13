@@ -39,16 +39,16 @@ function App() {
                PUBLIC ROUTES
           ====================== */}
           <Route path="/" element={<Home />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/update-password/:token" element={<UpdatePassword />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/catalog/:catalogName" element={<Catalog />} />
 
-		  <Route path="/signup" element={<OpenRoute><SignUp /></OpenRoute>} />
+		      <Route path="/signup" element={<OpenRoute><SignUp /></OpenRoute>} />
           <Route path="/login" element={<OpenRoute><LogIn /></OpenRoute>} />
           <Route path="/verify-email" element={<OpenRoute><VerifyEmail /></OpenRoute>} />
+          <Route path="/forgot-password" element={<OpenRoute><ForgotPassword /></OpenRoute>} />
 
           {/** =====================
                PROTECTED ROUTES

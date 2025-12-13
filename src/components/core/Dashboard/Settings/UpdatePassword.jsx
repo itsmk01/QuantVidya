@@ -1,10 +1,16 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { changePassword } from '../../../../services/operations/settingsAPI'
-import { FaLock, FaSave } from "react-icons/fa"
+import { FaArrowRight, FaLock, FaSave } from "react-icons/fa"
+import { useNavigate } from 'react-router-dom'
+import { getResetPasswordToken } from '../../../../services/operations/authAPI'
+import ConfirmationModal from '../../../common/ConfirmationModal'
 
 const UpdatePassword = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const {user} = useSelector((state) => state.auth)
   
   const [isEditingPassword, setIsEditingPassword] = useState(false)
   const [passwordData, setPasswordData] = useState({
@@ -12,6 +18,8 @@ const UpdatePassword = () => {
     newPassword: '',
     confirmPassword: ''
   })
+  const [confirmationModal, setConfirmationModal] = useState(null)
+  const [emailSent, setEmailSent] = useState(false);
 
   const handlePasswordChange = (e) => {
     setPasswordData({
@@ -30,6 +38,18 @@ const UpdatePassword = () => {
     if (passwordUpdated.success) {
       setIsEditingPassword(false)
     }
+  }
+  const handleForgotPassword = (e) => {
+    e.preventDefault() // Prevent form submission
+    setConfirmationModal({
+      text1: "We will send you the link at this email to reset your password ?",
+      text2: user?.email,
+      btn1text: "Proceed",
+      btn1Icon: <FaArrowRight/>,
+      btn2text: "Cancel",
+      btn1handler: () => dispatch(getResetPasswordToken(user?.email, setEmailSent, navigate)),
+      btn2handler: () => setConfirmationModal(null),
+    })
   }
 
   return (
@@ -68,6 +88,13 @@ const UpdatePassword = () => {
                   className='w-full bg-richblack-700 text-richblack-5 px-4 py-3 rounded-lg border border-richblack-600 focus:border-yellow-50 focus:outline-none transition-all duration-200'
                   required
                 />
+                <button 
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="mt-1 ml-auto max-w-max text-sm text-blue-100 hover:text-blue-200 transition-colors duration-200 cursor-pointer"
+                >
+                  Forgot Password ?
+                </button>
               </div>
               
               <div>
@@ -121,6 +148,7 @@ const UpdatePassword = () => {
           <p className='text-richblack-300'>Keep your account secure by using a strong password</p>
         )}
       </div>
+      {confirmationModal && <ConfirmationModal modalData={confirmationModal} />}
     </div>
   )
 }
