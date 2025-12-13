@@ -16,7 +16,7 @@ import {
   ProtectedRoute,
   StudentRoute,
   InstructorRoute,
-  AdminRoute,
+  OpenRoute,
 } from "./components/core/Auth/ProtectedRoute";
 import About from "./pages/About";
 import ContactUs from "./pages/ContactUs";
@@ -39,15 +39,16 @@ function App() {
                PUBLIC ROUTES
           ====================== */}
           <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<LogIn />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/update-password/:token" element={<UpdatePassword />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/catalog/:catalogName" element={<Catalog />} />
+
+		  <Route path="/signup" element={<OpenRoute><SignUp /></OpenRoute>} />
+          <Route path="/login" element={<OpenRoute><LogIn /></OpenRoute>} />
+          <Route path="/verify-email" element={<OpenRoute><VerifyEmail /></OpenRoute>} />
 
           {/** =====================
                PROTECTED ROUTES
