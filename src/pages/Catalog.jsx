@@ -83,11 +83,11 @@ const Catalog = () => {
 
   return (
     <div className="min-h-[calc(100vh-3.5rem)] bg-richblack-900">
-      {/* Hero Section */}
+      {/* Hero Section - Reduced padding */}
       <div className="bg-richblack-900 border-b border-richblack-800">
-        <div className="w-11/12 max-w-[1260px] mx-auto py-12 lg:py-16">
+        <div className="w-11/12 max-w-[1260px] mx-auto py-6 lg:py-8">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-richblack-400 text-sm mb-6">
+          <div className="flex items-center gap-2 text-richblack-400 text-sm mb-4">
             <span>Home</span>
             <FaChevronRight className="text-xs" />
             <span>Catalog</span>
@@ -99,34 +99,33 @@ const Catalog = () => {
             )}
           </div>
 
-          {/* Title Section */}
-          <div className="mb-8">
-            <h1 className="lg:text-4xl text-3xl font-bold text-white font-inter mb-4">
+          {/* Title Section - Reduced spacing */}
+          <div className="mb-5">
+            <h1 className="lg:text-3xl text-2xl font-bold text-white font-inter mb-2">
               {allCategories ? (
                 <>Explore Our <ColourText text="Course Catalog" /></>
               ) : (
                 <>{selectedCategory?.name} <ColourText text="Courses" /></>
               )}
             </h1>
-            <p className="text-richblack-200 font-inter lg:text-base text-sm max-w-3xl">
+            <p className="text-richblack-200 font-inter text-sm max-w-3xl">
               {allCategories 
-                ? "Discover our comprehensive collection of courses designed to help you master in-demand skills and advance your career."
-                : selectedCategory?.description || "Master the skills you need with expert-led courses and hands-on projects."}
+                ? "Discover our comprehensive collection of courses designed to help you master in-demand skills."
+                : selectedCategory?.description || "Master the skills you need with expert-led courses."}
             </p>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-richblack-800 border border-richblack-700 rounded-lg p-4 lg:p-6 
-                            hover:bg-richblack-700 transition-all duration-300
-                            shadow-[0_0_20px_rgba(255,255,255,0.02)]">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-richblack-700 rounded-lg">
-                  <FaBook className="text-yellow-50 text-lg" />
+          {/* Stats Cards - More compact */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+            <div className="bg-richblack-800 border border-richblack-700 rounded-lg p-3 lg:p-4 
+                            hover:bg-richblack-700 transition-all duration-300">
+              <div className="flex items-center gap-2 lg:gap-3">
+                <div className="p-1.5 lg:p-2 bg-richblack-700 rounded-lg">
+                  <FaBook className="text-yellow-50 text-sm lg:text-base" />
                 </div>
                 <div>
-                  <p className="text-richblack-300 text-xs lg:text-sm">Total Courses</p>
-                  <p className="text-white text-xl lg:text-2xl font-bold">
+                  <p className="text-richblack-300 text-xs">Courses</p>
+                  <p className="text-white text-lg lg:text-xl font-bold">
                     {allCategories 
                       ? allCourses?.length || 0
                       : selectedCategory?.courses?.length || 0}
@@ -135,30 +134,28 @@ const Catalog = () => {
               </div>
             </div>
 
-            <div className="bg-richblack-800 border border-richblack-700 rounded-lg p-4 lg:p-6 
-                            hover:bg-richblack-700 transition-all duration-300
-                            shadow-[0_0_20px_rgba(255,255,255,0.02)]">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-richblack-700 rounded-lg">
-                  <FaGraduationCap className="text-caribbeangreen-200 text-lg" />
+            <div className="bg-richblack-800 border border-richblack-700 rounded-lg p-3 lg:p-4 
+                            hover:bg-richblack-700 transition-all duration-300">
+              <div className="flex items-center gap-2 lg:gap-3">
+                <div className="p-1.5 lg:p-2 bg-richblack-700 rounded-lg">
+                  <FaGraduationCap className="text-caribbeangreen-200 text-sm lg:text-base" />
                 </div>
                 <div>
-                  <p className="text-richblack-300 text-xs lg:text-sm">Expert Instructors</p>
-                  <p className="text-white text-xl lg:text-2xl font-bold">50+</p>
+                  <p className="text-richblack-300 text-xs">Instructors</p>
+                  <p className="text-white text-lg lg:text-xl font-bold">50+</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-richblack-800 border border-richblack-700 rounded-lg p-4 lg:p-6 
-                            hover:bg-richblack-700 transition-all duration-300
-                            shadow-[0_0_20px_rgba(255,255,255,0.02)] col-span-2 lg:col-span-1">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-richblack-700 rounded-lg">
-                  <FaFilter className="text-blue-200 text-lg" />
+            <div className="bg-richblack-800 border border-richblack-700 rounded-lg p-3 lg:p-4 
+                            hover:bg-richblack-700 transition-all duration-300 col-span-2 lg:col-span-1">
+              <div className="flex items-center gap-2 lg:gap-3">
+                <div className="p-1.5 lg:p-2 bg-richblack-700 rounded-lg">
+                  <FaFilter className="text-blue-200 text-sm lg:text-base" />
                 </div>
                 <div>
-                  <p className="text-richblack-300 text-xs lg:text-sm">Categories</p>
-                  <p className="text-white text-xl lg:text-2xl font-bold">
+                  <p className="text-richblack-300 text-xs">Categories</p>
+                  <p className="text-white text-lg lg:text-xl font-bold">
                     {allCategories 
                       ? allCategories.length 
                       : 1 + differentCategories.length}
@@ -170,11 +167,11 @@ const Catalog = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="w-11/12 max-w-[1260px] mx-auto py-12">
+      {/* Main Content - Reduced top padding */}
+      <div className="w-11/12 max-w-[1260px] mx-auto py-8">
         {/* Category Filter */}
         {allCategories &&  allCategories?.length > 0 && (
-          <div className="mb-12">
+          <div className="mb-8">
             <CategoryFilter 
               categories={allCategories}
               activeFilter={activeFilter}
@@ -185,26 +182,26 @@ const Catalog = () => {
 
         {/* Courses Section */}
         {hasCourses ? (
-          <div className="mb-16">
-            <div className="flex justify-between items-center mb-8">
+          <div className="mb-12">
+            <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-2xl lg:text-3xl font-bold text-white font-inter mb-2">
+                <h2 className="text-xl lg:text-2xl font-bold text-white font-inter mb-1">
                   {allCategories ? "All Courses" : "Available Courses"}
                 </h2>
-                <p className="text-richblack-300 font-inter">
+                <p className="text-richblack-300 font-inter text-sm">
                   {filteredCourses.length} {filteredCourses.length === 1 ? 'course' : 'courses'} to explore
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               {filteredCourses.map((course) => (
                 <CourseCard key={course._id} course={course} />
               ))}
             </div>
           </div>
         ) : (
-          <div className="mb-16">
+          <div className="mb-12">
             <div className="bg-richblack-800 border border-richblack-700 rounded-xl p-12 text-center">
               <div className="w-20 h-20 mx-auto mb-6 bg-richblack-700 rounded-full flex items-center justify-center">
                 <FaBook className="text-richblack-400 text-3xl" />
@@ -221,16 +218,16 @@ const Catalog = () => {
 
         {/* Most Selling Courses */}
         {mostSellingCourses && mostSellingCourses.length > 0 && (
-          <div className="mb-16">
-            <div className="mb-8">
-              <h2 className="text-2xl lg:text-3xl font-bold text-white font-inter mb-2">
+          <div className="mb-12">
+            <div className="mb-6">
+              <h2 className="text-xl lg:text-2xl font-bold text-white font-inter mb-1">
                 Most Popular <ColourText text="Courses" />
               </h2>
-              <p className="text-richblack-300 font-inter">
+              <p className="text-richblack-300 font-inter text-sm">
                 Top-rated courses chosen by thousands of learners
               </p>
             </div>
-            <div className="bg-richblack-800 border border-richblack-700 rounded-xl p-6 lg:p-8
+            <div className="bg-richblack-800 border border-richblack-700 rounded-xl p-6
                             shadow-[0_0_20px_rgba(255,255,255,0.02)]">
               <CourseSlider courses={mostSellingCourses} />
             </div>
@@ -240,11 +237,11 @@ const Catalog = () => {
         {/* Other Categories */}
         {differentCategories && differentCategories.length > 0 && (
           <div>
-            <div className="mb-8">
-              <h2 className="text-2xl lg:text-3xl font-bold text-white font-inter mb-2">
+            <div className="mb-6">
+              <h2 className="text-xl lg:text-2xl font-bold text-white font-inter mb-1">
                 Explore More <ColourText text="Categories" />
               </h2>
-              <p className="text-richblack-300 font-inter">
+              <p className="text-richblack-300 font-inter text-sm">
                 Discover courses across different domains and technologies
               </p>
             </div>
