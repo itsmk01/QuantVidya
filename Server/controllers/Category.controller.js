@@ -2,95 +2,129 @@ const { data } = require("react-router-dom");
 const Category = require("../models/Category");
 const Course = require("../models/Course");
 
-exports.createCategory = async(req , res) => {
-    try{
-        //fetch data
-        const {name, description} = req.body;
-        if(!name || !description){
-            return res.status(400).json({
-                success: false,
-                message: "All fields are required !"
-            });
-        }
-
-        //validation
-        const categoryPresent = await Category.findOne({name});
-        if(categoryPresent){
-            return res.status(400).json({
-                success: false,
-                message: "Category already present !"
-            });
-        }
-
-        //create entry in db 
-        await Category.create({
-            name: name, 
-            description: description
-        });
-
-        //return response
-        return res.status(200).json({
-            success: true,
-            message: "Category created successfully !"
-        });
+exports.createCategory = async (req, res) => {
+  try {
+    //fetch data
+    const { name, description } = req.body;
+    if (!name || !description) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required !",
+      });
     }
-    catch(error){
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
+
+    //validation
+    const categoryPresent = await Category.findOne({ name });
+    if (categoryPresent) {
+      return res.status(400).json({
+        success: false,
+        message: "Category already present !",
+      });
     }
-}
+
+    //create entry in db
+    await Category.create({
+      name: name,
+      description: description,
+    });
+
+    //return response
+    return res.status(200).json({
+      success: true,
+      message: "Category created successfully !",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 exports.getAllCategory = async (req, res) => {
-    try{
-        const allCategoryDetails = await Category.find({}, {name: true, description: true})
-        .populate({
+  try {
+    const allCategoryDetails = await Category.find(
+      {},
+      { name: true, description: true }
+    )
+      .populate({
         path: "courses",
         match: { status: "Published" },
         populate: [
-          { path: "instructor", select: "firstName lastName email image" },
+          { path: "instructor", populate: { path: "additionalDetails" } },
           { path: "ratingAndReviews" },
           { path: "category", select: "name" },
         ],
       })
       .exec();
 
-      // Top selling courses overall
-      const topCourses = await Course.aggregate([
-        {
-          $addFields: {
-            enrolledCount: { $size: "$studentEnrolled" },
-          },
+    // Top selling courses overall
+    const topCourses = await Course.aggregate([
+      {
+        $addFields: {
+          enrolledCount: { $size: "$studentEnrolled" },
         },
-        { $sort: { enrolledCount: -1 } },
-        { $limit: 10 },
-        {
-          $lookup: {
-            from: "categories",
-            localField: "category",
-            foreignField: "_id",
-            as: "categoryDetails",
-          },
+      },
+      { $sort: { enrolledCount: -1 } },
+      { $limit: 10 },
+
+      // Category
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
         },
-        { $unwind: "$categoryDetails" },
-      ]);
+      },
+      { $unwind: "$category" },
 
-        return res.status(200).json({
-            success: true,
-            message: "All Categories are returned successfully !",
-            allCategoryDetails,
-            topCourses
-        });
+      // Instructor
+      {
+        $lookup: {
+          from: "users",
+          localField: "instructor",
+          foreignField: "_id",
+          as: "instructor",
+        },
+      },
+      { $unwind: "$instructor" },
 
-    }
-    catch(error){
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-}
+      // Instructor additionalDetails
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "instructor.additionalDetails",
+          foreignField: "_id",
+          as: "instructor.additionalDetails",
+        },
+      },
+      { $unwind: "$instructor.additionalDetails" },
+
+      // Ratings
+      {
+        $lookup: {
+          from: "ratingandreviews",
+          localField: "ratingAndReviews",
+          foreignField: "_id",
+          as: "ratingAndReviews",
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "All Categories are returned successfully !",
+      allCategoryDetails,
+      topCourses,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 exports.categoryPageDetails = async (req, res) => {
   try {
@@ -115,7 +149,7 @@ exports.categoryPageDetails = async (req, res) => {
         path: "courses",
         match: { status: "Published" },
         populate: [
-          { path: "instructor", select: "firstName lastName email image" },
+          { path: "instructor", populate: { path: "additionalDetails" } },
           { path: "ratingAndReviews" },
           { path: "category", select: "name" },
         ],
@@ -149,15 +183,49 @@ exports.categoryPageDetails = async (req, res) => {
       },
       { $sort: { enrolledCount: -1 } },
       { $limit: 10 },
+
+      // Category
       {
         $lookup: {
           from: "categories",
           localField: "category",
           foreignField: "_id",
-          as: "categoryDetails",
+          as: "category",
         },
       },
-      { $unwind: "$categoryDetails" },
+      { $unwind: "$category" },
+
+      // Instructor
+      {
+        $lookup: {
+          from: "users",
+          localField: "instructor",
+          foreignField: "_id",
+          as: "instructor",
+        },
+      },
+      { $unwind: "$instructor" },
+
+      // Instructor additionalDetails
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "instructor.additionalDetails",
+          foreignField: "_id",
+          as: "instructor.additionalDetails",
+        },
+      },
+      { $unwind: "$instructor.additionalDetails" },
+
+      // Ratings
+      {
+        $lookup: {
+          from: "ratingandreviews",
+          localField: "ratingAndReviews",
+          foreignField: "_id",
+          as: "ratingAndReviews",
+        },
+      },
     ]);
 
     // Return response

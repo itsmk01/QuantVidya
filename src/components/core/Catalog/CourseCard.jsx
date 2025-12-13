@@ -63,7 +63,7 @@ const CourseCard = ({ course }) => {
           {/* Instructor */}
           <div className="flex items-center gap-2 mb-3">
             <img
-              src={course.instructor?.image || '/default-avatar.png'}
+              src={course.instructor?.additionalDetails?.image || '/default-avatar.png'}
               alt={course.instructor?.firstName}
               className="w-6 h-6 rounded-full object-cover"
             />

@@ -12,42 +12,48 @@ const Catalog = () => {
   const [loading, setLoading] = useState(false)
   const [activeFilter, setActiveFilter] = useState("all")
 
-  const [allCategories, setAllCategories] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [differentCategories, setDifferentCategories] = useState([]);
-  const [mostSellingCourses, setMostSellingCourses] = useState([]);
+  // Combine all related states into a single state object
+  const [catalogData, setCatalogData] = useState({
+    allCategories: null,
+    selectedCategory: null,
+    differentCategories: [],
+    mostSellingCourses: []
+  });
 
   useEffect(() => {
     const getCategoryDetails = async () => {
       setLoading(true)
       
-      // Reset states when switching between all courses and specific category
-      setAllCategories(null);
-      setSelectedCategory(null);
-      setDifferentCategories([]);
-      setMostSellingCourses([]);
-      
       try {
         if(catalogName){
           const res = await getCatalogPageData(catalogName);
-          setSelectedCategory(res?.selectedCategory);
-          setDifferentCategories(res?.differentCategories || []);
-          setMostSellingCourses(res?.topCourses || []);
+          // Single state update instead of multiple
+          setCatalogData({
+            allCategories: null,
+            selectedCategory: res?.selectedCategory,
+            differentCategories: res?.differentCategories || [],
+            mostSellingCourses: res?.topCourses || []
+          });
         } else {
-          console.log("Fetching all categories data in catalog page");
           const res = await fetchCourseCategories();
-          setAllCategories(res?.allCategoryDetails || []);
-          setMostSellingCourses(res?.topCourses || []);
-          console.log("ALL CATEGORIES DATA............", res); 
+          // Single state update instead of multiple
+          setCatalogData({
+            allCategories: res?.allCategoryDetails || [],
+            selectedCategory: null,
+            differentCategories: [],
+            mostSellingCourses: res?.topCourses || []
+          });
         }
       } catch (error) {
         console.log("Could not fetch category details")
       }
       setLoading(false)
     }
-    
     getCategoryDetails()
   }, [catalogName])
+
+  // Destructure for easier access
+  const { allCategories, selectedCategory, differentCategories, mostSellingCourses } = catalogData;
 
   // Calculate allCourses only when in allCategories mode
   const allCourses = allCategories 
@@ -56,9 +62,13 @@ const Catalog = () => {
       }, []) 
     : [];
   
+    
   // Get courses to display based on mode
   const coursesToDisplay = allCategories ? allCourses : (selectedCategory?.courses || []);
   const hasCourses = coursesToDisplay.length > 0;
+  const filteredCourses = (activeFilter === "all") ? 
+                              coursesToDisplay : coursesToDisplay.filter((course) => course.category?._id === activeFilter) ;
+
 
   if (loading) {
     return (
@@ -163,10 +173,10 @@ const Catalog = () => {
       {/* Main Content */}
       <div className="w-11/12 max-w-[1260px] mx-auto py-12">
         {/* Category Filter */}
-        {!allCategories && differentCategories && differentCategories.length > 0 && (
+        {allCategories &&  allCategories?.length > 0 && (
           <div className="mb-12">
             <CategoryFilter 
-              categories={differentCategories}
+              categories={allCategories}
               activeFilter={activeFilter}
               setActiveFilter={setActiveFilter}
             />
@@ -182,13 +192,13 @@ const Catalog = () => {
                   {allCategories ? "All Courses" : "Available Courses"}
                 </h2>
                 <p className="text-richblack-300 font-inter">
-                  {coursesToDisplay.length} {coursesToDisplay.length === 1 ? 'course' : 'courses'} to explore
+                  {filteredCourses.length} {filteredCourses.length === 1 ? 'course' : 'courses'} to explore
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-              {coursesToDisplay.map((course) => (
+              {filteredCourses.map((course) => (
                 <CourseCard key={course._id} course={course} />
               ))}
             </div>

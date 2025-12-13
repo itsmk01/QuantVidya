@@ -31,7 +31,7 @@ const cartPersistConfig = {
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),  // Wrap only auth
   profile: profileReducer,
-  cart: persistReducer(coursePersistConfig, cartReducer),
+  cart: persistReducer(cartPersistConfig, cartReducer),
   course: persistReducer(coursePersistConfig, courseReducer),
 });
 
