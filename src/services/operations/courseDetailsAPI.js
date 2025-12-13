@@ -7,7 +7,6 @@ import { courseEndpoints } from "../apis"
 
 const {
   COURSE_DETAILS_API,
-  COURSE_CATEGORIES_API,
   GET_ALL_COURSE_API,
   CREATE_COURSE_API,
   EDIT_COURSE_API,
@@ -62,23 +61,6 @@ export const fetchCourseDetails = async (courseId) => {
   }
   toast.dismiss(toastId)
   //   dispatch(setLoading(false));
-  return result
-}
-
-// fetching the available course categories
-export const fetchCourseCategories = async () => {
-  let result = []
-  try {
-    const response = await apiConnector("GET", COURSE_CATEGORIES_API)
-    console.log("COURSE_CATEGORIES_API API RESPONSE............", response)
-    if (!response?.data?.success) {
-      throw new Error("Could Not Fetch Course Categories")
-    }
-    result = response?.data?.allCategory
-  } catch (error) {
-    console.log("COURSE_CATEGORY_API API ERROR............", error)
-    toast.error(error.message)
-  }
   return result
 }
 

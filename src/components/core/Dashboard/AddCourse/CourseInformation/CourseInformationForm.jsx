@@ -8,8 +8,8 @@ import { useDispatch, useSelector } from "react-redux"
 import {
   addCourseDetails,
   editCourseDetails,
-  fetchCourseCategories,
 } from "../../../../../services/operations/courseDetailsAPI"
+import { fetchCourseCategories } from "../../../../../services/operations/catalogAPI"
 import { setCourse, setStep } from "../../../../../slices/courseSlice"
 import { COURSE_STATUS } from "../../../../../utils/constant"
 import IconBtn from "../../../../common/IconButton"
@@ -35,10 +35,10 @@ export default function CourseInformationForm() {
   useEffect(() => {
     const getCategories = async () => {
       setLoading(true)
-      const categories = await fetchCourseCategories()
-      if (categories.length > 0) {
+      const res = await fetchCourseCategories()
+      if (res?.allCategoryDetails?.length > 0) {
         // console.log("categories", categories)
-        setCourseCategories(categories)
+        setCourseCategories(res.allCategoryDetails)
       }
       setLoading(false)
     }

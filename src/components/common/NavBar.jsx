@@ -7,13 +7,11 @@ import { ACCOUNT_TYPE } from '../../utils/constant';
 import { AiOutlineShoppingCart, AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import {BsChevronDown} from 'react-icons/bs';
 import ProfileDropdown from '../core/Auth/ProfileDropdown';
-import { apiConnector } from '../../services/apiconnector';
-import { courseEndpoints } from '../../services/apis';
+import { fetchCourseCategories } from '../../services/operations/catalogAPI';
 
 const NavBar = () => {
     const {user} = useSelector((state) => state.auth);
     const {totalItems} = useSelector((state) => state.cart);
-    const {COURSE_CATEGORIES_API} = courseEndpoints;
     const [subLinks, setSubLinks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,9 +24,9 @@ const NavBar = () => {
     const fetchSubLinks = async () => {
             setLoading(true);
             try{
-                const response = await apiConnector("GET", COURSE_CATEGORIES_API, null);
+                const response = await fetchCourseCategories();
                 // console.log("categories in navbar is : " , response.data.allCategory);
-                setSubLinks(response.data.allCategory);
+                setSubLinks(response?.allCategoryDetails || []);
             }catch(error){
                 console.log("Error while fetching categories", error);
             }
@@ -118,6 +116,13 @@ const NavBar = () => {
                                 </div>
                               ) : subLinks && subLinks.length ? (
                                 <div className="space-y-1">
+                                    {/* Link for all courses */}
+                                    <Link
+                                        to="/catalog"
+                                        className="block rounded-xl bg-transparent px-4 py-3 hover:bg-gradient-to-r hover:from-yellow-500/10 hover:to-pink-500/10 transition-all duration-200 hover:translate-x-1 border border-transparent hover:border-yellow-500/20"
+                                      >
+                                        <p className="font-medium">All Courses</p>
+                                      </Link>
                                   {subLinks
                                     ?.filter((subLink) => subLink?.courses?.length >= 0)
                                     ?.map((subLink, i) => (

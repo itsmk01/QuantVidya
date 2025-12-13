@@ -3,7 +3,7 @@ import {apiConnector} from '../apiconnector';
 import { categoriesEndpoint } from "../apis"
 
 
-const { CATALOG_PAGE_API } = categoriesEndpoint;
+const { CATALOG_PAGE_API, COURSE_CATEGORIES_API } = categoriesEndpoint;
 
 export const getCatalogPageData = async (categoryName) => {
 //   const toastId = toast.loading("Loading...")
@@ -32,22 +32,20 @@ export const getCatalogPageData = async (categoryName) => {
   return result
 }
 
-export const getAllCategories = async () => {
+// fetching the available course categories
+export const fetchCourseCategories = async () => {
   let result = []
-  
   try {
-    const response = await apiConnector("GET", catalogData.CATEGORIES_API)
-    
+    const response = await apiConnector("GET", COURSE_CATEGORIES_API)
+    console.log("COURSE_CATEGORIES_API API RESPONSE............", response)
     if (!response?.data?.success) {
-      throw new Error("Could Not Fetch Categories")
+      throw new Error("Could Not Fetch Course Categories")
     }
-    
-    result = response?.data?.data
+    result = response?.data
   } catch (error) {
-    console.log("GET ALL CATEGORIES API ERROR............", error)
+    console.log("COURSE_CATEGORY_API API ERROR............", error)
     toast.error(error.message)
   }
-  
   return result
 }
 

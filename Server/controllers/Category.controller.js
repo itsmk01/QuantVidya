@@ -1,3 +1,4 @@
+const { data } = require("react-router-dom");
 const Category = require("../models/Category");
 const Course = require("../models/Course");
 
@@ -43,11 +44,43 @@ exports.createCategory = async(req , res) => {
 
 exports.getAllCategory = async (req, res) => {
     try{
-        const allCategory = await Category.find({}, {name: true, description: true}).populate("courses").exec();
+        const allCategoryDetails = await Category.find({}, {name: true, description: true})
+        .populate({
+        path: "courses",
+        match: { status: "Published" },
+        populate: [
+          { path: "instructor", select: "firstName lastName email image" },
+          { path: "ratingAndReviews" },
+          { path: "category", select: "name" },
+        ],
+      })
+      .exec();
+
+      // Top selling courses overall
+      const topCourses = await Course.aggregate([
+        {
+          $addFields: {
+            enrolledCount: { $size: "$studentEnrolled" },
+          },
+        },
+        { $sort: { enrolledCount: -1 } },
+        { $limit: 10 },
+        {
+          $lookup: {
+            from: "categories",
+            localField: "category",
+            foreignField: "_id",
+            as: "categoryDetails",
+          },
+        },
+        { $unwind: "$categoryDetails" },
+      ]);
+
         return res.status(200).json({
             success: true,
             message: "All Categories are returned successfully !",
-            allCategory
+            allCategoryDetails,
+            topCourses
         });
 
     }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getCatalogPageData } from '../services/operations/catalogAPI'
+import { getCatalogPageData, fetchCourseCategories } from '../services/operations/catalogAPI'
 import CourseCard from '../components/core/Catalog/CourseCard'
 import CourseSlider from '../components/core/Catalog/CourseSlider'
 import CategoryFilter from '../components/core/Catalog/CategoryFilter'
@@ -9,29 +9,56 @@ import ColourText from '../components/core/HomePage/ColourText'
 
 const Catalog = () => {
   const { catalogName } = useParams()
-  const [catalogPageData, setCatalogPageData] = useState(null)
-  const [categoryId, setCategoryId] = useState("")
   const [loading, setLoading] = useState(false)
   const [activeFilter, setActiveFilter] = useState("all")
+
+  const [allCategories, setAllCategories] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [differentCategories, setDifferentCategories] = useState([]);
+  const [mostSellingCourses, setMostSellingCourses] = useState([]);
 
   useEffect(() => {
     const getCategoryDetails = async () => {
       setLoading(true)
+      
+      // Reset states when switching between all courses and specific category
+      setAllCategories(null);
+      setSelectedCategory(null);
+      setDifferentCategories([]);
+      setMostSellingCourses([]);
+      
       try {
-        const res = await getCatalogPageData(catalogName)
-        console.log("Category Details fetched:", res)
-        setCatalogPageData(res)
-        setCategoryId(res?.selectedCategory?._id)
+        if(catalogName){
+          const res = await getCatalogPageData(catalogName);
+          setSelectedCategory(res?.selectedCategory);
+          setDifferentCategories(res?.differentCategories || []);
+          setMostSellingCourses(res?.topCourses || []);
+        } else {
+          console.log("Fetching all categories data in catalog page");
+          const res = await fetchCourseCategories();
+          setAllCategories(res?.allCategoryDetails || []);
+          setMostSellingCourses(res?.topCourses || []);
+          console.log("ALL CATEGORIES DATA............", res); 
+        }
       } catch (error) {
         console.log("Could not fetch category details")
       }
       setLoading(false)
     }
     
-    if (catalogName) {
-      getCategoryDetails()
-    }
+    getCategoryDetails()
   }, [catalogName])
+
+  // Calculate allCourses only when in allCategories mode
+  const allCourses = allCategories 
+    ? allCategories.reduce((acc, category) => {
+        return acc.concat(category.courses || []);
+      }, []) 
+    : [];
+  
+  // Get courses to display based on mode
+  const coursesToDisplay = allCategories ? allCourses : (selectedCategory?.courses || []);
+  const hasCourses = coursesToDisplay.length > 0;
 
   if (loading) {
     return (
@@ -43,11 +70,6 @@ const Catalog = () => {
       </div>
     )
   }
- 
-  const isAllCourses = !catalogName
-  const selectedCategory = catalogPageData?.selectedCategory
-  const differentCourses = catalogPageData?.differentCategories
-  const mostSellingCourses = catalogPageData?.mostSellingCourses
 
   return (
     <div className="min-h-[calc(100vh-3.5rem)] bg-richblack-900">
@@ -59,7 +81,7 @@ const Catalog = () => {
             <span>Home</span>
             <FaChevronRight className="text-xs" />
             <span>Catalog</span>
-            {!isAllCourses && (
+            {catalogName && selectedCategory && (
               <>
                 <FaChevronRight className="text-xs" />
                 <span className="text-richblack-50">{selectedCategory?.name}</span>
@@ -70,14 +92,14 @@ const Catalog = () => {
           {/* Title Section */}
           <div className="mb-8">
             <h1 className="lg:text-4xl text-3xl font-bold text-white font-inter mb-4">
-              {isAllCourses ? (
+              {allCategories ? (
                 <>Explore Our <ColourText text="Course Catalog" /></>
               ) : (
                 <>{selectedCategory?.name} <ColourText text="Courses" /></>
               )}
             </h1>
             <p className="text-richblack-200 font-inter lg:text-base text-sm max-w-3xl">
-              {isAllCourses 
+              {allCategories 
                 ? "Discover our comprehensive collection of courses designed to help you master in-demand skills and advance your career."
                 : selectedCategory?.description || "Master the skills you need with expert-led courses and hands-on projects."}
             </p>
@@ -95,7 +117,9 @@ const Catalog = () => {
                 <div>
                   <p className="text-richblack-300 text-xs lg:text-sm">Total Courses</p>
                   <p className="text-white text-xl lg:text-2xl font-bold">
-                    {selectedCategory?.courses?.length || 0}
+                    {allCategories 
+                      ? allCourses?.length || 0
+                      : selectedCategory?.courses?.length || 0}
                   </p>
                 </div>
               </div>
@@ -125,7 +149,9 @@ const Catalog = () => {
                 <div>
                   <p className="text-richblack-300 text-xs lg:text-sm">Categories</p>
                   <p className="text-white text-xl lg:text-2xl font-bold">
-                    {differentCourses?.length || 0}
+                    {allCategories 
+                      ? allCategories.length 
+                      : 1 + differentCategories.length}
                   </p>
                 </div>
               </div>
@@ -137,10 +163,10 @@ const Catalog = () => {
       {/* Main Content */}
       <div className="w-11/12 max-w-[1260px] mx-auto py-12">
         {/* Category Filter */}
-        {!isAllCourses && differentCourses && differentCourses.length > 0 && (
+        {!allCategories && differentCategories && differentCategories.length > 0 && (
           <div className="mb-12">
             <CategoryFilter 
-              categories={differentCourses}
+              categories={differentCategories}
               activeFilter={activeFilter}
               setActiveFilter={setActiveFilter}
             />
@@ -148,21 +174,21 @@ const Catalog = () => {
         )}
 
         {/* Courses Section */}
-        {selectedCategory?.courses && selectedCategory.courses.length > 0 ? (
+        {hasCourses ? (
           <div className="mb-16">
             <div className="flex justify-between items-center mb-8">
               <div>
                 <h2 className="text-2xl lg:text-3xl font-bold text-white font-inter mb-2">
-                  {isAllCourses ? "All Courses" : "Available Courses"}
+                  {allCategories ? "All Courses" : "Available Courses"}
                 </h2>
                 <p className="text-richblack-300 font-inter">
-                  {selectedCategory.courses.length} {selectedCategory.courses.length === 1 ? 'course' : 'courses'} to explore
+                  {coursesToDisplay.length} {coursesToDisplay.length === 1 ? 'course' : 'courses'} to explore
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-              {selectedCategory.courses.map((course) => (
+              {coursesToDisplay.map((course) => (
                 <CourseCard key={course._id} course={course} />
               ))}
             </div>
@@ -202,7 +228,7 @@ const Catalog = () => {
         )}
 
         {/* Other Categories */}
-        {differentCourses && differentCourses.length > 0 && (
+        {differentCategories && differentCategories.length > 0 && (
           <div>
             <div className="mb-8">
               <h2 className="text-2xl lg:text-3xl font-bold text-white font-inter mb-2">
@@ -213,7 +239,7 @@ const Catalog = () => {
               </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {differentCourses.map((category) => (
+              {differentCategories.map((category) => (
                 <div
                   key={category._id}
                   className="bg-richblack-800 border border-richblack-700 rounded-xl p-6 
