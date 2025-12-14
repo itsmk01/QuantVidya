@@ -8,7 +8,6 @@ const { CATALOG_PAGE_API, COURSE_CATEGORIES_API } = categoriesEndpoint;
 export const getCatalogPageData = async (categoryName) => {
 //   const toastId = toast.loading("Loading...")
   let result = []
-  
   try {
     const response = await apiConnector(
       "POST",
@@ -37,7 +36,7 @@ export const fetchCourseCategories = async () => {
   let result = []
   try {
     const response = await apiConnector("GET", COURSE_CATEGORIES_API)
-    console.log("COURSE_CATEGORIES_API API RESPONSE............", response)
+    // console.log("COURSE_CATEGORIES_API API RESPONSE............", response)
     if (!response?.data?.success) {
       throw new Error("Could Not Fetch Course Categories")
     }

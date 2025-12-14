@@ -2,6 +2,10 @@ const { data } = require("react-router-dom");
 const Category = require("../models/Category");
 const Course = require("../models/Course");
 
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 exports.createCategory = async (req, res) => {
   try {
     //fetch data
@@ -140,10 +144,11 @@ exports.categoryPageDetails = async (req, res) => {
 
     // Convert slug -> name  (data-science -> Data Science)
     const formattedName = categoryName.replace(/-/g, " ");
+    const safeName = escapeRegex(formattedName);
 
     // Fetch selected category by name (case insensitive)
     const selectedCategory = await Category.findOne({
-      name: { $regex: "^" + formattedName + "$", $options: "i" },
+      name: { $regex: "^" + safeName + "$", $options: "i" },
     })
       .populate({
         path: "courses",
