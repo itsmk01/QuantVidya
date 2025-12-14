@@ -90,7 +90,7 @@ const Catalog = () => {
           <div className="flex items-center gap-2 text-richblack-400 text-sm mb-4">
             <span>Home</span>
             <FaChevronRight className="text-xs" />
-            <span>Catalog</span>
+            <span className={`${allCategories? "text-richblack-50": ""}`}>Catalog</span>
             {catalogName && selectedCategory && (
               <>
                 <FaChevronRight className="text-xs" />
