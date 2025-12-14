@@ -344,10 +344,42 @@ exports.getInstructorCourses = async (req, res) => {
     const instructorCourses = await Course.find({ instructor: userId })
       .sort({ createdAt: -1 })
       .populate({
+        path: "category",
+        populate: {
+          path: "courses",
+          populate: [
+            {
+              path: "instructor",
+              populate: {
+                path: "additionalDetails",
+              },
+            },
+            {
+              path: "ratingAndReviews",
+            },
+          ],
+        },
+      })
+      .populate({
         path: "courseContent",
         populate: {
           path: "subSection",
         },
+      })
+      .populate({
+        path: "instructor",
+        populate: {
+          path: "additionalDetails",
+        },
+      })
+      .populate({
+        path: "ratingAndReviews",
+        populate: {
+          path: "user",
+          populate: {
+            path: "additionalDetails",
+          }
+        }
       })
       .exec();
 
