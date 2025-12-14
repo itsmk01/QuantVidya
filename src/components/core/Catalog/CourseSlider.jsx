@@ -6,6 +6,8 @@ const CourseSlider = ({ courses }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [coursesPerView, setCoursesPerView] = useState(3)
 
+  const publishedCourses = courses.filter(course => course.status === 'Published');
+
   // Handle responsive courses per view
   useEffect(() => {
     const handleResize = () => {
@@ -17,26 +19,23 @@ const CourseSlider = ({ courses }) => {
         setCoursesPerView(3) // Desktop: 3 courses
       }
     }
-
     // Set initial value
     handleResize()
-
     // Add event listener
     window.addEventListener('resize', handleResize)
-
     // Cleanup
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   // Reset index when coursesPerView changes to avoid out of bounds
   useEffect(() => {
-    const newMaxIndex = Math.max(0, courses.length - coursesPerView)
+    const newMaxIndex = Math.max(0, publishedCourses.length - coursesPerView)
     if (currentIndex > newMaxIndex) {
       setCurrentIndex(newMaxIndex)
     }
-  }, [coursesPerView, courses.length, currentIndex])
+  }, [coursesPerView, publishedCourses.length, currentIndex])
 
-  const maxIndex = Math.max(0, courses.length - coursesPerView)
+  const maxIndex = Math.max(0, publishedCourses.length - coursesPerView)
 
   const handlePrevious = () => {
     setCurrentIndex((prev) => Math.max(0, prev - 1))
@@ -46,14 +45,14 @@ const CourseSlider = ({ courses }) => {
     setCurrentIndex((prev) => Math.min(maxIndex, prev + 1))
   }
 
-  if (!courses || courses.length === 0) {
+  if (!publishedCourses || publishedCourses.length === 0) {
     return null
   }
 
   return (
     <div className="relative">
       {/* Navigation Buttons */}
-      {courses.length > coursesPerView && (
+      {publishedCourses.length > coursesPerView && (
         <>
           <button
             onClick={handlePrevious}
@@ -99,7 +98,7 @@ const CourseSlider = ({ courses }) => {
             transform: `translateX(-${currentIndex * (100 / coursesPerView)}%)`,
           }}
         >
-          {courses.map((course) => (
+          {publishedCourses.map((course) => (
             <div
               key={course._id}
               className="flex-shrink-0"
@@ -116,7 +115,7 @@ const CourseSlider = ({ courses }) => {
       </div>
 
       {/* Dots Indicator */}
-      {courses.length > coursesPerView && (
+      {publishedCourses.length > coursesPerView && (
         <div className="flex justify-center gap-2 mt-6">
           {Array.from({ length: maxIndex + 1 }).map((_, index) => (
             <button

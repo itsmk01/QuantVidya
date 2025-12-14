@@ -181,7 +181,7 @@ const InstructorDashboard = () => {
                   <div
                     key={course._id}
                     className="p-4 bg-richblack-700 rounded-lg hover:bg-richblack-600 transition-all duration-200 cursor-pointer"
-                    onClick={() => navigate(`/dashboard/edit-course/${course._id}`)}
+                    onClick={() => navigate(`/courses/${course._id}`)}
                   >
                     <div className="flex items-start gap-4">
                       <img

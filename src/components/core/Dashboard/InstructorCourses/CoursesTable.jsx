@@ -42,7 +42,9 @@ const CoursesTable = ({ courses, setCourses }) => {
       {courses.map((course, index) => (
         <div 
           key={course._id}
-          className="bg-richblack-800 border border-richblack-700 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300"
+          className="bg-richblack-800 border border-richblack-700 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl 
+                      transition-shadow duration-300 cursor-pointer"
+          onClick={() => navigate(`/courses/${course._id}`)}
         >
           <div className="lg:px-10 lg:py-8 p-6">
             <div className="flex flex-col lg:flex-row gap-6">
@@ -96,16 +98,21 @@ const CoursesTable = ({ courses, setCourses }) => {
                   <div className="flex items-center gap-3">
                     <button
                       disabled={loading}
-                      onClick={() => navigate(`/dashboard/edit-course/${course._id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/dashboard/edit-course/${course._id}`);
+                      }}
                       title="Edit"
-                      className="px-4 py-2 bg-richblack-700 hover:bg-richblack-600 text-yellow-50 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-richblack-700 hover:bg-richblack-600 text-yellow-50 rounded-lg font-medium flex 
+                                items-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <FiEdit2 />
                       <span className="hidden sm:inline">Edit</span>
                     </button>
                     <button
                       disabled={loading}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setConfirmationModal({
                           text1: "Do you want to delete this course?",
                           text2: "All the data related to this course will be deleted",
@@ -117,7 +124,9 @@ const CoursesTable = ({ courses, setCourses }) => {
                         })
                       }}
                       title="Delete"
-                      className="px-4 py-2 bg-richblack-700 hover:bg-red-900 text-richblack-5 hover:text-red-100 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-richblack-700 hover:bg-red-900 text-richblack-5 hover:text-red-100 rounded-lg 
+                                font-medium flex items-center gap-2 transition-all duration-200 disabled:opacity-50 
+                                disabled:cursor-not-allowed"
                     >
                       <RiDeleteBin6Line />
                       <span className="hidden sm:inline">Delete</span>
