@@ -529,7 +529,23 @@ exports.getFullCourseDetails = async (req, res) => {
   try {
     const { courseId } = req.params;
     const courseDetails = await Course.findById(courseId)
-      .populate("category")
+      .populate({
+        path: "category",
+        populate: {
+          path: "courses",
+          populate: [
+            {
+              path: "instructor",
+              populate: {
+                path: "additionalDetails",
+              },
+            },
+            {
+              path: "ratingAndReviews",
+            },
+          ],
+        },
+      })
       .populate({
         path: "courseContent",
         populate: {
@@ -542,7 +558,15 @@ exports.getFullCourseDetails = async (req, res) => {
           path: "additionalDetails",
         },
       })
-      .populate("ratingAndReviews")
+      .populate({
+        path: "ratingAndReviews",
+        populate: {
+          path: "user",
+          populate: {
+            path: "additionalDetails",
+          }
+        }
+      })
       .exec();
 
     //validation

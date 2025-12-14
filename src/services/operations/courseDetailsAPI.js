@@ -287,7 +287,7 @@ export const deleteCourse = async (data) => {
 
 // get full details of a course
 export const getFullDetailsOfCourse = async (courseId) => {
-  const toastId = toast.loading("Loading...")
+  // const toastId = toast.loading("Loading...")
   //   dispatch(setLoading(true));
   let result = null
   try {
@@ -306,7 +306,7 @@ export const getFullDetailsOfCourse = async (courseId) => {
     result = error.response.data
     // toast.error(error.response.data.message);
   }
-  toast.dismiss(toastId)
+  // toast.dismiss(toastId)
   //   dispatch(setLoading(false));
   return result
 }

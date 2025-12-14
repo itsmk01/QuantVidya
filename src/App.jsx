@@ -21,11 +21,12 @@ import {
 import About from "./pages/About";
 import ContactUs from "./pages/ContactUs";
 import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
-import AddCourse from "./components/core/Dashboard/AddCourse/index"
+import AddCourse from "./components/core/Dashboard/AddCourse/index";
 import Settings from "./components/core/Dashboard/Settings/index";
 import MyCourses from "./components/core/Dashboard/MyCourses";
 import InstructorDashboard from "./components/core/Dashboard/InstructorDashboard";
 import EditCourse from "./components/core/Dashboard/EditCourse";
+import CourseDetails from "./pages/CourseDetails";
 
 function App() {
   return (
@@ -34,7 +35,6 @@ function App() {
 
       <div className="mt-14">
         <Routes>
-
           {/** =====================
                PUBLIC ROUTES
           ====================== */}
@@ -44,11 +44,39 @@ function App() {
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/catalog/:catalogName" element={<Catalog />} />
-
-		      <Route path="/signup" element={<OpenRoute><SignUp /></OpenRoute>} />
-          <Route path="/login" element={<OpenRoute><LogIn /></OpenRoute>} />
-          <Route path="/verify-email" element={<OpenRoute><VerifyEmail /></OpenRoute>} />
-          <Route path="/forgot-password" element={<OpenRoute><ForgotPassword /></OpenRoute>} />
+          <Route path="/courses/:courseId" element={<CourseDetails />} />
+          <Route
+            path="/signup"
+            element={
+              <OpenRoute>
+                <SignUp />
+              </OpenRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <OpenRoute>
+                <LogIn />
+              </OpenRoute>
+            }
+          />
+          <Route
+            path="/verify-email"
+            element={
+              <OpenRoute>
+                <VerifyEmail />
+              </OpenRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <OpenRoute>
+                <ForgotPassword />
+              </OpenRoute>
+            }
+          />
 
           {/** =====================
                PROTECTED ROUTES
@@ -61,8 +89,10 @@ function App() {
             }
           >
             <Route path="/dashboard/my-profile" element={<MyProfile />} />
-            <Route path="/dashboard/enrolled-courses" element={<EnrolledCourses />} />
-            <Route path="/dashboard/cart" element={<Cart />} />
+            <Route
+              path="/dashboard/enrolled-courses"
+              element={<EnrolledCourses />}
+            />
             <Route path="/dashboard/settings" element={<Settings />} />
 
             {/** Instructor Routes */}
@@ -99,6 +129,15 @@ function App() {
                 <InstructorRoute>
                   <EditCourse />
                 </InstructorRoute>
+              }
+            />
+
+            <Route
+              path="/dashboard/cart"
+              element={
+                <StudentRoute>
+                  <Cart />
+                </StudentRoute>
               }
             />
           </Route>

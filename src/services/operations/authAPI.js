@@ -168,6 +168,7 @@ export function logout(navigate) {
       // Clear persisted storage
       localStorage.removeItem('persist:auth');
       localStorage.removeItem('persist:course');
+      localStorage.removeItem('persist:cart');
       
       toast.success("Logged Out Successfully!");
       
