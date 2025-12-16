@@ -27,6 +27,8 @@ import MyCourses from "./components/core/Dashboard/MyCourses";
 import InstructorDashboard from "./components/core/Dashboard/InstructorDashboard";
 import EditCourse from "./components/core/Dashboard/EditCourse";
 import CourseDetails from "./pages/CourseDetails";
+import ViewCourse from "./pages/ViewCourse";
+import VideoDetails from "./components/core/ViewCourse/VideoDetails";
 
 function App() {
   return (
@@ -77,7 +79,13 @@ function App() {
               </OpenRoute>
             }
           />
-
+          // In your main router file
+          <Route path="/view-course/:courseId" element={<ViewCourse />}>
+            <Route
+              path="section/:sectionId/sub-section/:subSectionId"
+              element={<VideoDetails />}
+            />
+          </Route>
           {/** =====================
                PROTECTED ROUTES
           ====================== */}
@@ -141,7 +149,6 @@ function App() {
               }
             />
           </Route>
-
           {/** Fallback Route */}
           <Route
             path="*"

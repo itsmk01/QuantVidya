@@ -18,7 +18,6 @@ export const userEndpoints = {
   GETUSER_API: BASE_URL + "/auth/me",
   GET_INSTRUCTOR_DATA_API: BASE_URL + "/profile/getInstructorData",
   GET_USER_ENROLLED_COURSES: BASE_URL + "/profile/enrolled-courses",
- 
 }
 
 //SETTING ENDPOINTS
@@ -42,11 +41,11 @@ export const courseEndpoints = {
   DELETE_SECTION_API: BASE_URL + "/course/deleteSection",
   DELETE_SUBSECTION_API: BASE_URL + "/course/deleteSubSection",
   DELETE_COURSE_API: BASE_URL + "/course/deleteCourse",
-  GET_FULL_COURSE_DETAILS_AUTHENTICATED:
+  GET_FULL_COURSE_DETAILS:
     BASE_URL + "/course/getFullCourseDetails",
-  LECTURE_COMPLETION_API: BASE_URL + "/course/updateCourseProgress",
   CREATE_RATING_API: BASE_URL + "/course/createRating",
-  
+  GET_FULL_COURSE_DETAILS_AUTHENTICATED: BASE_URL + "/course/getAuthenticatedFullCourseDetails",
+  UPDATE_COURSE_PROGRESS_API: BASE_URL + "/course/updateCourseProgress",
 }
 
 export const categoriesEndpoint = {

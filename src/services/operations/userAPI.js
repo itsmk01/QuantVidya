@@ -107,7 +107,7 @@ export const getUserEnrolledCourses = async () => {
   let result = []
   try {
     const response = await apiConnector("GET", GET_USER_ENROLLED_COURSES);
-    console.log("GET USER ENROLLED COURSES API RESPONSE............", response)
+    // console.log("GET USER ENROLLED COURSES API RESPONSE............", response)
     if (!response?.data?.success) {
       throw new Error("Could Not Fetch Course Categories")
     }

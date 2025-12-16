@@ -4,6 +4,7 @@ const Category = require("../models/Category");
 const User = require("../models/User");
 const SubSection = require("../models/SubSection");
 const Section = require("../models/Section");
+const CourseProgress = require("../models/CourseProgress")
 
 const {
   uploadImageToCloudinary,
@@ -619,6 +620,210 @@ exports.getFullCourseDetails = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+
+exports.getAuthenticatedFullCourseDetails = async (req, res) => {
+  try {
+    const { courseId } = req.body;
+    const userId = req.user.id; // Get userId from authenticated user
+
+    // Validate required fields
+    if (!courseId) {
+      return res.status(400).json({
+        success: false,
+        message: "Course ID is required",
+      });
+    }
+
+    // Fetch course details with all populated fields
+    const courseDetails = await Course.findById(courseId)
+      .populate({
+        path: "category",
+        populate: {
+          path: "courses",
+          populate: [
+            {
+              path: "instructor",
+              populate: {
+                path: "additionalDetails",
+              },
+            },
+            {
+              path: "ratingAndReviews",
+            },
+          ],
+        },
+      })
+      .populate({
+        path: "courseContent",
+        populate: {
+          path: "subSection",
+        },
+      })
+      .populate({
+        path: "instructor",
+        populate: {
+          path: "additionalDetails",
+        },
+      })
+      .populate({
+        path: "ratingAndReviews",
+        populate: {
+          path: "user",
+          populate: {
+            path: "additionalDetails",
+          },
+        },
+      })
+      .exec();
+
+    // Validate course exists
+    if (!courseDetails) {
+      return res.status(404).json({
+        success: false,
+        message: `Course not found with ID: ${courseId}`,
+      });
+    }
+
+    // Calculate total lectures
+    let totalLectures = 0;
+    if (courseDetails.courseContent && courseDetails.courseContent.length > 0) {
+      courseDetails.courseContent.forEach((section) => {
+        if (section.subSection && Array.isArray(section.subSection)) {
+          totalLectures += section.subSection.length;
+        }
+      });
+    }
+
+    // Fetch user's course progress
+    const courseProgress = await CourseProgress.findOne({
+      courseID: courseId,
+      userId: userId,
+    });
+
+    // Get completed lectures array (array of lecture IDs)
+    const completedLectures = courseProgress?.completedVideos || [];
+
+    // Calculate progress percentage
+    const progressPercentage = totalLectures > 0 
+      ? Math.round((completedLectures.length / totalLectures) * 100) 
+      : 0;
+
+    // Return response with course details and progress
+    return res.status(200).json({
+      success: true,
+      message: "Authenticated course details fetched successfully",
+      data: {
+        courseDetails: courseDetails,
+        totalLectures: totalLectures,
+        completedLectures: completedLectures, // Array of completed lecture IDs
+        progressPercentage: progressPercentage,
+      },
+    });
+
+  } catch (error) {
+    console.error("Error in getAuthenticatedFullCourseDetails:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching course details",
+      error: error.message,
+    });
+  }
+};
+
+
+exports.updateCourseProgress = async (req, res) => {
+  try {
+    const { courseId, subSectionId } = req.body;
+    const userId = req.user.id;
+
+    // Validate required fields
+    if (!courseId || !subSectionId) {
+      return res.status(400).json({
+        success: false,
+        message: "Course ID and SubSection ID are required",
+      });
+    }
+
+    // Validate if the subsection exists in the course
+    const course = await Course.findById(courseId).populate("courseContent");
+    
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    // Check if subsection exists in the course
+    let subsectionExists = false;
+    for (const section of course.courseContent) {
+      if (section.subSection.includes(subSectionId)) {
+        subsectionExists = true;
+        break;
+      }
+    }
+
+    if (!subsectionExists) {
+      return res.status(404).json({
+        success: false,
+        message: "SubSection not found in this course",
+      });
+    }
+
+    // Check if already completed BEFORE updating
+    const existingProgress = await CourseProgress.findOne({
+      courseId: courseId,  // Changed from courseID to courseId
+      userId: userId,
+      completedVideos: subSectionId,
+    });
+
+    if (existingProgress) {
+      return res.status(200).json({
+        success: true,
+        message: "Lecture was already marked as completed",
+        data: existingProgress,
+        isNewlyCompleted: false,
+        alreadyCompleted: true,
+      });
+    }
+
+    // Use $addToSet to safely add without duplicates
+    const courseProgress = await CourseProgress.findOneAndUpdate(
+      {
+        courseId: courseId,  // Changed from courseID to courseId
+        userId: userId,
+      },
+      {
+        $addToSet: { completedVideos: subSectionId },
+      },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      }
+    );
+
+    const isNewDocument = courseProgress.completedVideos.length === 1;
+
+    return res.status(isNewDocument ? 201 : 200).json({
+      success: true,
+      message: isNewDocument
+        ? "Course progress created and lecture marked as completed"
+        : "Lecture marked as completed successfully",
+      data: courseProgress,
+      isNewlyCompleted: true,
+    });
+
+  } catch (error) {
+    console.error("Error in updateCourseProgress:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while updating course progress",
+      error: error.message,
     });
   }
 };

@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const { auth, isInstructor , isStudent, isAdmin} = require("../middlewares/auth");
-const { createCourse, getAllCourses, getFullCourseDetails, editCourse, getInstructorCourses, deleteCourse } = require("../controllers/Course.controller");
+const { createCourse, getAllCourses, getFullCourseDetails, editCourse, getInstructorCourses, deleteCourse, 
+            getAuthenticatedFullCourseDetails, updateCourseProgress } = require("../controllers/Course.controller");
 const { createSection, updateSection, deleteSection } = require("../controllers/Section.controller");
 const { createSubSection, updateSubSection, deleteSubSection } = require("../controllers/SubSection.controller");
 const { createRating, getAverageRating, getAllRatingOfCourse, getAllRatingAndReviews } = require("../controllers/RatingAndReviews.controller");
@@ -23,6 +24,8 @@ router.get("/getAllCourses", getAllCourses);
 router.get("/getFullCourseDetails/:courseId", getFullCourseDetails);
 router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses);
 
+router.post("/getAuthenticatedFullCourseDetails", auth,isStudent, getAuthenticatedFullCourseDetails);
+router.post("/updateCourseProgress" , auth, isStudent, updateCourseProgress);
 
 //Routes for rating and review
 router.post("/createRating", auth , isStudent , createRating);
