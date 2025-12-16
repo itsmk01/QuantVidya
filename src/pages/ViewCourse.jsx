@@ -20,7 +20,6 @@ export default function ViewCourse() {
   useEffect(() => {
     ;(async () => {
       const courseData = await getAuthenticatedFullDetailsOfCourse(courseId)
-      console.log("CourseData :" , courseData);
       if (courseData) {
         dispatch(setCourseSectionData(courseData.courseDetails.courseContent))
         dispatch(setEntireCourseData(courseData.courseDetails))

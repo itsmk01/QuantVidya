@@ -6,8 +6,7 @@ import ReactStars from "react-rating-stars-component"
 import { createRating } from "../../../services/operations/courseDetailsAPI"
 
 export default function CourseReviewModal({ setReviewModal }) {
-  const { user } = useSelector((state) => state.profile)
-  const { token } = useSelector((state) => state.auth)
+  const { user } = useSelector((state) => state.auth)
   const { courseEntireData } = useSelector((state) => state.viewCourse)
 
   const {
@@ -33,13 +32,13 @@ export default function CourseReviewModal({ setReviewModal }) {
         rating: data.courseRating,
         review: data.courseExperience,
       },
-      token
+      user
     )
     setReviewModal(false)
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] !mt-0 grid h-screen w-screen place-items-center overflow-auto bg-white bg-opacity-10 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[1000] !mt-0 grid place-items-center overflow-auto bg-white/10 backdrop-blur-sm">
       <div className="my-10 w-11/12 max-w-[700px] rounded-xl border border-richblack-400 bg-richblack-800">
         {/* Modal Header */}
         <div className="flex items-center justify-between rounded-t-xl bg-richblack-700 p-5">
@@ -52,7 +51,7 @@ export default function CourseReviewModal({ setReviewModal }) {
         <div className="p-6">
           <div className="flex items-center justify-center gap-x-4">
             <img
-              src={user?.image}
+              src={user?.additionalDetails.image}
               alt={user?.firstName + "profile"}
               className="aspect-square w-[50px] rounded-full object-cover"
             />
