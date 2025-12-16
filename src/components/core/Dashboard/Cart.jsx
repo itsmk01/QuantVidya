@@ -5,21 +5,33 @@ import { FaShoppingCart, FaTrash, FaArrowRight, FaTag, FaClock, FaChevronRight, 
 import { BsCurrencyRupee } from 'react-icons/bs'
 import { removeFromCart } from '../../../slices/cartSlice'
 import ColourText from '../HomePage/ColourText'
-// import { buyCourse } from '../../../services/operations/studentFeaturesAPI'
+import { buyCourse } from '../../../services/operations/paymentAPI'
+import toast from 'react-hot-toast'
+import { ACCOUNT_TYPE } from '../../../utils/constant'
 
 const Cart = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { cart, total, totalItems } = useSelector((state) => state.cart)
-  const { token } = useSelector((state) => state.auth)
-  const { user } = useSelector((state) => state.profile)
+  const { user } = useSelector((state) => state.auth)
   const [loading, setLoading] = useState(false)
 
   const handleBuyCourse = async () => {
     const courses = cart.map((course) => course._id)
-    if (token) {
+     if (!user) {
+      toast.error('Please login to purchase')
+      navigate('/login')
+      return
+    }
+
+    if(user && user.accountType === ACCOUNT_TYPE.INSTRUCTOR){
+        toast.error("Instructors cannot purchase courses");
+        return;
+    }
+
+    if (user) {
       setLoading(true)
-      // await buyCourse(token, courses, user, navigate, dispatch)
+      await buyCourse(courses , user, navigate, dispatch)
       setLoading(false)
     }
   }

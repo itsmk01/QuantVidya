@@ -53,3 +53,10 @@ export const categoriesEndpoint = {
   CATALOG_PAGE_API: BASE_URL + "/course/getCategoryPageDetails",
   COURSE_CATEGORIES_API: BASE_URL + "/course/getAllCategories",
 }
+
+// STUDENTS ENDPOINTS
+export const paymentEndpoints = {
+  COURSE_PAYMENT_API: BASE_URL + "/payment/capturePayment",
+  COURSE_VERIFY_API: BASE_URL + "/payment/verifyPayment",
+  SEND_PAYMENT_SUCCESS_EMAIL_API: BASE_URL + "/payment/sendPaymentSuccessEmail",
+}

@@ -1,23 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaShoppingCart, FaCheckCircle, FaShare, FaHeart } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from '../../../slices/cartSlice'
 import toast from 'react-hot-toast'
+import { ACCOUNT_TYPE } from '../../../utils/constant'
+import { buyCourse } from '../../../services/operations/paymentAPI'
 
 const PurchaseCard = ({ courseData, isEnrolled }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [loading, setLoading] = useState(false)
   const { user } = useSelector((state) => state.auth)
   const { cart } = useSelector((state) => state.cart)
 
   const isInCart = cart?.some(item => item._id === courseData._id)
 
-  const handleBuyCourse = () => {
+  const handleBuyCourse = async() => {
     if (!user) {
       toast.error('Please login to purchase')
       navigate('/login')
       return
+    }
+
+    if(user && user.accountType === ACCOUNT_TYPE.INSTRUCTOR){
+        toast.error("Instructors cannot purchase courses");
+        return;
     }
 
     if (isEnrolled) {
@@ -25,8 +33,15 @@ const PurchaseCard = ({ courseData, isEnrolled }) => {
       return
     }
 
+    
+    if (user) {
+      setLoading(true)
+      await buyCourse([courseData._id] , user, navigate, dispatch)
+      setLoading(false)
+    }
+
     // Navigate to checkout or payment
-    navigate('/dashboard/cart')
+    // navigate('/dashboard/cart')
   }
 
   const handleAddToCart = () => {
@@ -36,7 +51,7 @@ const PurchaseCard = ({ courseData, isEnrolled }) => {
       return
     }
 
-    if(user && user.accountType === "Instructor"){
+    if(user && user.accountType === ACCOUNT_TYPE.INSTRUCTOR){
         toast.error("Instructors cannot purchase courses");
         return;
     }
