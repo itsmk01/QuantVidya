@@ -1,4 +1,4 @@
-const { data } = require("react-router-dom");
+// const { data } = require("react-router-dom");
 const Category = require("../models/Category");
 const Course = require("../models/Course");
 
