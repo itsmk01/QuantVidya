@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({                   //for entertaing http request from frontend
-    origin:"http://localhost:3000",
+    origin:["http://localhost:3000", "https://quantvidya.vercel.app"],
     credentials: true, //allows cookies
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],

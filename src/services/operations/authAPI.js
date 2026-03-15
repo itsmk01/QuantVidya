@@ -169,6 +169,7 @@ export function logout(navigate) {
       localStorage.removeItem('persist:auth');
       localStorage.removeItem('persist:course');
       localStorage.removeItem('persist:cart');
+      localStorage.removeItem('persist:viewCourse')
       
       toast.success("Logged Out Successfully!");
       
